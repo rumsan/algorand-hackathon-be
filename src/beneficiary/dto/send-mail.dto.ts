@@ -28,3 +28,5 @@ export class CreateBeneficiaryDto {
     mnemonics: string
     
 }
+
+
