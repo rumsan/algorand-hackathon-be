@@ -33,11 +33,13 @@ export class BeneficiaryController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query() getBeneficiaryDto: GetBeneficiaryDto,
   ) {
-    console.log('getBeneficiaryDto', getBeneficiaryDto);
-    // const { email, walletAddress } = getBeneficiaryDto;
-    // const search = { email, walletAddress };
+    // console.log('getBeneficiaryDto', getBeneficiaryDto);
+    const { email, walletAddress } = getBeneficiaryDto;
+    const search = { email, walletAddress };
 
-    // return this.beneficiaryService.findAll(limit, page, search);
+     const res = this.beneficiaryService.findAll(limit, page, search);
+    //  console.log('res', res);
+     return res;
   }
   @Post('create-ben')
   sendMail(@Body() sendMailDTO: CreateBeneficiaryDto, @Res() response: any) {
