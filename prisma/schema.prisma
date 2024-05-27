@@ -16,3 +16,10 @@ model Beneficiary {
   gender String
   walletAddress String?  
 }
+
+model Voucher {
+  uuid    String     @default(uuid())
+  voucherName String
+  voucherSymbol String @unique
+  assetId Int @default(0)
+}

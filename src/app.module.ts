@@ -5,6 +5,7 @@ import { MailerModule } from '@nestjs-modules/mailer'
 import { ConfigModule } from '@nestjs/config';
 import { BeneficiaryModule } from './beneficiary/beneficiary.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { VouchersModule } from './vouchers/vouchers.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PrismaModule } from './prisma/prisma.module';
       },
     }),
     BeneficiaryModule,
+    VouchersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
