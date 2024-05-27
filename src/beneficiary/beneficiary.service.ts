@@ -1,6 +1,7 @@
 import {
   ConflictException,
   HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -9,6 +10,14 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { PrismaAppService } from 'src/prisma/prisma.service';
 import * as QRCode from 'qrcode';
 import { decryptMessage } from 'src/utils/decrypt';
+import { Beneficiary } from '@prisma/client';
+
+type getReturn = {
+  data: any[];
+  total: number;
+  limit: number;
+  page: number;
+};
 
 @Injectable()
 export class BeneficiaryService {
@@ -61,5 +70,51 @@ export class BeneficiaryService {
       console.log(error);
       return error;
     }
+  }
+
+  async findAll(
+    limit?: number,
+    page?: number,
+    search?: { email?: string; walletAddress?: string },
+  ): Promise<getReturn> {
+    const pageNum = page;
+    const size = limit;
+
+    const whereCondition: any = {
+      status: 'Published',
+    };
+    if (search.email) {
+      whereCondition.title = search.email;
+    }
+
+    if (search.walletAddress) {
+      whereCondition.author = search.walletAddress;
+    }
+
+    // Get total count
+    const total = await this.prisma.beneficiary.count({
+      where: whereCondition,
+    });
+
+    console.log(whereCondition);
+    // Fetch paginated data
+    const data = await this.prisma.beneficiary.findMany({
+      where: whereCondition,
+      skip: (pageNum - 1) * size,
+      take: size,
+    });
+
+    return { data, total, limit: size, page: pageNum };
+  }
+
+  async findOne(id: string): Promise<any> {
+    const result = await this.prisma.beneficiary.findUnique({
+      // @ts-ignore
+      where: { id },
+    });
+
+    if (!result)
+      throw new HttpException('Beneficiary not found', HttpStatus.BAD_REQUEST);
+    return result;
   }
 }
