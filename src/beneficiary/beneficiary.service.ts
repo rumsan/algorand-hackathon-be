@@ -10,7 +10,6 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { PrismaAppService } from 'src/prisma/prisma.service';
 import * as QRCode from 'qrcode';
 import { decryptMessage } from 'src/utils/decrypt';
-import { Beneficiary } from '@prisma/client';
 
 type getReturn = {
   data: any[];
@@ -77,18 +76,20 @@ export class BeneficiaryService {
     page?: number,
     search?: { email?: string; walletAddress?: string },
   ): Promise<getReturn> {
+    console.log('pugyo');
+    console.log(limit, page, search);
     const pageNum = page;
     const size = limit;
 
     const whereCondition: any = {
-      status: 'Published',
+      AND: [],
     };
     if (search.email) {
-      whereCondition.title = search.email;
+      whereCondition.email = search.email;
     }
 
     if (search.walletAddress) {
-      whereCondition.author = search.walletAddress;
+      whereCondition.walletAddress = search.walletAddress;
     }
 
     // Get total count
