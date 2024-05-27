@@ -49,8 +49,7 @@ export class BeneficiaryService {
           return createUser;      
       })
     } catch (error) {
-      console.log(error)
-      return error
+      return error.response
     }
     
         

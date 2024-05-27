@@ -8,12 +8,7 @@ export class BeneficiaryController {
 
   @Post('create-ben')
   sendMail(@Body() sendMailDTO: CreateBeneficiaryDto, @Res() response: any) {
-    const mail = this.beneficiaryService.sendMail(sendMailDTO);
-
-    return response.status(200).json({
-      message: 'success',
-      mail,
-    });
+    return this.beneficiaryService.sendMail(sendMailDTO);
   }
  
   @Post('add')
