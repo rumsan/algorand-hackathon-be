@@ -80,15 +80,13 @@ export class BeneficiaryService {
     const pageNum = page;
     const size = limit;
 
-    const whereCondition: any = {
-      status: 'Published',
-    };
+    const whereCondition: any = {};
     if (search.email) {
-      whereCondition.title = search.email;
+      whereCondition.email = search.email;
     }
 
     if (search.walletAddress) {
-      whereCondition.author = search.walletAddress;
+      whereCondition.walletAddress = search.walletAddress;
     }
 
     // Get total count
