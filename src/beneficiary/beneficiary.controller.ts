@@ -34,10 +34,10 @@ export class BeneficiaryController {
     @Query() getBeneficiaryDto: GetBeneficiaryDto,
   ) {
     console.log('getBeneficiaryDto', getBeneficiaryDto);
-    // const { email, walletAddress } = getBeneficiaryDto;
-    // const search = { email, walletAddress };
+    const { email, walletAddress } = getBeneficiaryDto;
+    const search = { email, walletAddress };
 
-    // return this.beneficiaryService.findAll(limit, page, search);
+    return this.beneficiaryService.findAll(limit, page, search);
   }
   @Post('create-ben')
   sendMail(@Body() sendMailDTO: CreateBeneficiaryDto, @Res() response: any) {
