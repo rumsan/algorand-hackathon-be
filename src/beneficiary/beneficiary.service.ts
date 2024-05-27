@@ -64,6 +64,7 @@ export class BeneficiaryService {
           ],
         });
 
+      console.log(createUser, 'createUser')
         return createUser;
       });
     } catch (error) {

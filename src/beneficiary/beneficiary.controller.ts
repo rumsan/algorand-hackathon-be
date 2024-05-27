@@ -41,8 +41,6 @@ export class BeneficiaryController {
   }
   @Post('create-ben')
   sendMail(@Body() sendMailDTO: CreateBeneficiaryDto, @Res() response: any) {
-    // console.log('pugyo yeha samma');
-    // console.log('sendMailDTO', sendMailDTO);
     const mail = this.beneficiaryService.sendMail(sendMailDTO);
 
     return response.status(200).json({
@@ -50,6 +48,4 @@ export class BeneficiaryController {
       mail,
     });
   }
-
-  
 }
