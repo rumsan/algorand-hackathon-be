@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateProjectDto } from './create-project.dto';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ArrayNotEmpty, ArrayUnique, IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {}
@@ -22,6 +22,15 @@ export class GetProjectDto {
     example: '3',
   })
   limit?: string;
+}
+
+
+export class AddBeneficiaryDto {
+  @IsArray()
+  @ArrayNotEmpty()
+  @ArrayUnique()
+  @IsString({ each: true })
+  beneficiaryIds: string[];
 }
 
 

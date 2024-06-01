@@ -21,27 +21,28 @@ export class ProjectService {
   async findAll(
     limit?: number,
     page?: number,
-    search?: { projectName?: string },
+    search?: { name?: string },
   ): Promise<getReturn> {
     console.log(limit, page, search);
     const pageNum = page;
     const size = limit;
 
-    const whereCondition: any = {
-      AND: [],
+    const whereCondition: Record<any, any> = {
+      isArchived: false,
     };
-    if (search.projectName) {
-      whereCondition.name = search.projectName;
+    if (search?.name) {
+      whereCondition.name = search.name;
     }
 
     // Get total count
-    const total = await this.prisma.beneficiary.count({
+    const total = await this.prisma.project.count({
       where: whereCondition,
     });
 
     console.log(whereCondition);
+    console.log(total);
     // Fetch paginated data
-    const data = await this.prisma.beneficiary.findMany({
+    const data = await this.prisma.project.findMany({
       where: whereCondition,
       skip: (pageNum - 1) * size,
       take: size,
@@ -50,7 +51,7 @@ export class ProjectService {
     return { data, total, limit: size, page: pageNum };
   }
 
-  // Find all beneficiary in a single project 
+  // Find all beneficiary in a single project
   async findAllBeneficiary(
     id: string,
     limit?: number,
@@ -83,8 +84,9 @@ export class ProjectService {
     };
   }
 
-  findOne(id: string) {
-    const result = this.prisma.project.findUnique({
+  // find one project
+  async findOne(id: string) {
+    const result = await this.prisma.project.findUnique({
       where: { uuid: id },
     });
 
@@ -94,27 +96,28 @@ export class ProjectService {
     return result;
   }
 
-  update(id: string, updateProjectDto: UpdateProjectDto) {
-    const result = this.prisma.project.findUnique({
+  // update project
+  async update(id: string, updateProjectDto: UpdateProjectDto) {
+    const result = await this.prisma.project.findUnique({
       where: { uuid: id },
     });
 
     if (!result)
       throw new HttpException('project not found', HttpStatus.BAD_REQUEST);
-    return this.prisma.project.update({
+    return await this.prisma.project.update({
       where: { uuid: id },
       data: { name: updateProjectDto.name },
     });
   }
   // Add  array of beneficiaries to the project
-  addBeneficiary(id: string, beneficiaryId: Array<string>) {
-    const result = this.prisma.project.findUnique({
+  async addBeneficiary(id: string, beneficiaryId: Array<string>) {
+    const result = await this.prisma.project.findUnique({
       where: { uuid: id },
     });
 
     if (!result)
       throw new HttpException('project not found', HttpStatus.BAD_REQUEST);
-    return this.prisma.project.update({
+    return await this.prisma.project.update({
       where: { uuid: id },
       data: {
         beneficiaries: {
@@ -155,7 +158,7 @@ export class ProjectService {
       throw new HttpException('Project not found', HttpStatus.BAD_REQUEST);
     }
 
-    return this.prisma.project.update({
+    return await this.prisma.project.update({
       where: { uuid: id },
       data: { isArchived },
     });

@@ -48,9 +48,9 @@ export class BeneficiaryService {
             walletAddress: CreateBeneficiaryDto?.walletAddress,
           },
         });
-
-        await this.mailService.sendMail({
-          from: 'Rahat <sushant.rumsan@gmail.com>',
+        console.log(createUser);
+        const mail = await this.mailService.sendMail({
+          from: 'Rahat <asimneupane11@gmail.com>',
           to: CreateBeneficiaryDto.email,
           subject: `Welcome to Rahat`,
           html: `<h2>Welcome to rahat</h2><p>You have been added as a beneficiary in Rahat. </p><p>Download Pera wallet and scan the QR code below:</p><img width="300" height="300" src="cid:qrcode@nodemailer"/>`,
@@ -62,6 +62,8 @@ export class BeneficiaryService {
             },
           ],
         });
+
+        console.log(mail);
 
         return createUser;
       });
@@ -76,19 +78,15 @@ export class BeneficiaryService {
     page?: number,
     search?: { email?: string; walletAddress?: string },
   ): Promise<getReturn> {
-    console.log('pugyo');
-    console.log(limit, page, search);
     const pageNum = page;
     const size = limit;
 
-    const whereCondition: any = {
-      AND: [],
-    };
-    if (search.email) {
+    const whereCondition: Record<any, any> = {};
+    if (search?.email) {
       whereCondition.email = search.email;
     }
 
-    if (search.walletAddress) {
+    if (search?.walletAddress) {
       whereCondition.walletAddress = search.walletAddress;
     }
 
@@ -111,7 +109,7 @@ export class BeneficiaryService {
   async findOne(id: string): Promise<any> {
     const result = await this.prisma.beneficiary.findUnique({
       // @ts-ignore
-      where: { id },
+      where: { uuid: id },
     });
 
     if (!result)

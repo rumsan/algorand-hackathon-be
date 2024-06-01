@@ -22,6 +22,7 @@ export class BeneficiaryController {
   @ApiQuery({ name: 'limit', required: false, type: String })
   @ApiQuery({ name: 'page', required: false, type: String })
   @ApiQuery({ name: 'name', required: false, type: String })
+  @ApiQuery({ name: 'email', required: false, type: String })
   @ApiQuery({ name: 'walletAddress', required: false, type: String })
   @ApiResponse({
     status: 200,
@@ -37,9 +38,9 @@ export class BeneficiaryController {
     const { email, walletAddress } = getBeneficiaryDto;
     const search = { email, walletAddress };
 
-     const res = this.beneficiaryService.findAll(limit, page, search);
+    const res = this.beneficiaryService.findAll(limit, page, search);
     //  console.log('res', res);
-     return res;
+    return res;
   }
   @Post('create-ben')
   sendMail(@Body() sendMailDTO: CreateBeneficiaryDto, @Res() response: any) {

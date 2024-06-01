@@ -56,7 +56,7 @@ export class GetBeneficiaryDto {
   @IsString()
   @ApiProperty({
     description: 'title of the blog',
-    example: 'Nepal the great',
+    example: 'rumsan@gmail.com',
   })
   email: string;
 
