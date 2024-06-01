@@ -31,6 +31,6 @@ import { ProjectModule } from './project/project.module';
     ProjectModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ProjectService,BeneficiaryModule],
+  providers: [AppService, ProjectService, BeneficiaryModule],
 })
 export class AppModule {}
