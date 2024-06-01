@@ -11,7 +11,7 @@ import { PrismaAppService } from 'src/prisma/prisma.service';
 import * as QRCode from 'qrcode';
 import { decryptMessage } from 'src/utils/decrypt';
 
-type getReturn = {
+export type getReturn = {
   data: any[];
   total: number;
   limit: number;
