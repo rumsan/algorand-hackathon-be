@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Beneficiary {
-  uuid          String    @id @default(uuid())
+  uuid          String    @id @unique @default(uuid())
   email         String    @unique
   name          String
   age           Int
@@ -19,18 +19,19 @@ model Beneficiary {
 }
 
 model Project {
-  uuid          String        @id @default(uuid())
-  name          String
+  uuid          String        @id @unique @default(uuid())
+  name          String        @unique
   voucher       Voucher?      @relation(fields: [voucherId], references: [assetId])
   voucherId     Int?          @unique
   adminAddress  String[]
   isArchived    Boolean       @default(false)
   createdAt     DateTime      @default(now())
+  imageUrl      String?
   beneficiaries Beneficiary[] @relation("BeneficiaryProjects")
 }
 
 model Voucher {
-  uuid          String   @default(uuid())
+  uuid          String   @id @unique @default(uuid())
   voucherName   String
   voucherSymbol String   @unique
   assetId       Int      @unique @default(0)

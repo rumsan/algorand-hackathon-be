@@ -11,6 +11,14 @@ export class CreateBeneficiaryDto {
   email: string;
 
   @ApiProperty({
+    description: 'Project UUID',
+    example: 'c7b8c2c3-7c8d-4c8b-9c8d-4c8b9c8d4c8b',
+  })
+  @IsString()
+  @IsNotEmpty()
+  projectId: string;
+
+  @ApiProperty({
     description: 'Name of the beneficiary',
     example: 'John Doe',
   })

@@ -48,6 +48,14 @@ export class BeneficiaryService {
             walletAddress: CreateBeneficiaryDto?.walletAddress,
           },
         });
+        await prisma.project.update({
+          where: { uuid: CreateBeneficiaryDto?.projectId },
+          data: {
+            beneficiaries: {
+              connect: { uuid: createUser.uuid },
+            },
+          },
+        });
         console.log(this.mailService, 'mailservice');
         await this.mailService.sendMail({
           from: 'Rahat <asimneupane11@gmail.com>',
@@ -97,6 +105,7 @@ export class BeneficiaryService {
     // Fetch paginated data
     const data = await this.prisma.beneficiary.findMany({
       where: whereCondition,
+      select: {projects:true},
       skip: (pageNum - 1) * size,
       take: size,
     });
@@ -114,17 +123,17 @@ export class BeneficiaryService {
     return result;
   }
 
-  async addProject(ids: string[], projectId: string) {
-    const updates = ids.map((id) => {
-      this.prisma.beneficiary.update({
-        where: { uuid: id },
-        data: {
-          projects: {
-            connect: { uuid: projectId },
-          },
-        },
-      });
-    });
-    await Promise.all(updates);
-  }
+  // async addProject(ids: string[], projectId: string) {
+  //   const updates = ids.map((id) => {
+  //     this.prisma.beneficiary.update({
+  //       where: { uuid: id },
+  //       data: {
+  //         projects: {
+  //           connect: { uuid: projectId },
+  //         },
+  //       },
+  //     });
+  //   });
+  //   await Promise.all(updates);
+  // }
 }
