@@ -54,6 +54,11 @@ export class BeneficiaryController {
     });
   }
 
-  @Post('add')
-  create(@Body() sendMailDTO: CreateBeneficiaryDto) {}
+  @Post('add-project')
+  async addProject(
+    @Body('ids') ids: string[],
+    @Body('projectId') projectId: string,
+  ): Promise<void> {
+    await this.beneficiaryService.addProject(ids, projectId);
+  }
 }

@@ -48,8 +48,8 @@ export class BeneficiaryService {
             walletAddress: CreateBeneficiaryDto?.walletAddress,
           },
         });
-        console.log(createUser);
-        const mail = await this.mailService.sendMail({
+        console.log(this.mailService, 'mailservice');
+        await this.mailService.sendMail({
           from: 'Rahat <asimneupane11@gmail.com>',
           to: CreateBeneficiaryDto.email,
           subject: `Welcome to Rahat`,
@@ -62,8 +62,6 @@ export class BeneficiaryService {
             },
           ],
         });
-
-        console.log(mail);
 
         return createUser;
       });
@@ -108,12 +106,25 @@ export class BeneficiaryService {
 
   async findOne(id: string): Promise<any> {
     const result = await this.prisma.beneficiary.findUnique({
-      // @ts-ignore
       where: { uuid: id },
     });
 
     if (!result)
       throw new HttpException('Beneficiary not found', HttpStatus.BAD_REQUEST);
     return result;
+  }
+
+  async addProject(ids: string[], projectId: string) {
+    const updates = ids.map((id) => {
+      this.prisma.beneficiary.update({
+        where: { uuid: id },
+        data: {
+          projects: {
+            connect: { uuid: projectId },
+          },
+        },
+      });
+    });
+    await Promise.all(updates);
   }
 }
