@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MailerModule } from '@nestjs-modules/mailer'
+import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 import { BeneficiaryModule } from './beneficiary/beneficiary.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -11,7 +11,7 @@ import { VouchersModule } from './vouchers/vouchers.module';
   imports: [
     PrismaModule,
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
     MailerModule.forRoot({
       transport: {
