@@ -11,7 +11,7 @@ import { PrismaAppService } from 'src/prisma/prisma.service';
 import * as QRCode from 'qrcode';
 import { decryptMessage } from 'src/utils/decrypt';
 
-type getReturn = {
+export type getReturn = {
   data: any[];
   total: number;
   limit: number;
@@ -48,9 +48,17 @@ export class BeneficiaryService {
             walletAddress: CreateBeneficiaryDto?.walletAddress,
           },
         });
-
+        await prisma.project.update({
+          where: { uuid: CreateBeneficiaryDto?.projectId },
+          data: {
+            beneficiaries: {
+              connect: { uuid: createUser.uuid },
+            },
+          },
+        });
+        console.log(this.mailService, 'mailservice');
         await this.mailService.sendMail({
-          from: 'Rahat <sushant.rumsan@gmail.com>',
+          from: 'Rahat <asimneupane11@gmail.com>',
           to: CreateBeneficiaryDto.email,
           subject: `Welcome to Rahat`,
           html: `<h2>Welcome to rahat</h2><p>You have been added as a beneficiary in Rahat. </p><p>Download Pera wallet and scan the QR code below:</p><img width="300" height="300" src="cid:qrcode@nodemailer"/>`,
@@ -76,19 +84,15 @@ export class BeneficiaryService {
     page?: number,
     search?: { email?: string; walletAddress?: string },
   ): Promise<getReturn> {
-    console.log('pugyo');
-    console.log(limit, page, search);
     const pageNum = page;
     const size = limit;
 
-    const whereCondition: any = {
-      AND: [],
-    };
-    if (search.email) {
+    const whereCondition: Record<any, any> = {};
+    if (search?.email) {
       whereCondition.email = search.email;
     }
 
-    if (search.walletAddress) {
+    if (search?.walletAddress) {
       whereCondition.walletAddress = search.walletAddress;
     }
 
@@ -101,6 +105,7 @@ export class BeneficiaryService {
     // Fetch paginated data
     const data = await this.prisma.beneficiary.findMany({
       where: whereCondition,
+      select: {projects:true},
       skip: (pageNum - 1) * size,
       take: size,
     });
@@ -110,12 +115,25 @@ export class BeneficiaryService {
 
   async findOne(id: string): Promise<any> {
     const result = await this.prisma.beneficiary.findUnique({
-      // @ts-ignore
-      where: { id },
+      where: { uuid: id },
     });
 
     if (!result)
       throw new HttpException('Beneficiary not found', HttpStatus.BAD_REQUEST);
     return result;
   }
+
+  // async addProject(ids: string[], projectId: string) {
+  //   const updates = ids.map((id) => {
+  //     this.prisma.beneficiary.update({
+  //       where: { uuid: id },
+  //       data: {
+  //         projects: {
+  //           connect: { uuid: projectId },
+  //         },
+  //       },
+  //     });
+  //   });
+  //   await Promise.all(updates);
+  // }
 }

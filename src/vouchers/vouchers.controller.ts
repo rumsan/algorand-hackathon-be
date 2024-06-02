@@ -1,13 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { VouchersService } from './vouchers.service';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
+import { ApiTags, ApiResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 
 @Controller('vouchers')
+@ApiTags('Vouchers')
 export class VouchersController {
   constructor(private readonly vouchersService: VouchersService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new Voucher' })
   create(@Body() createVoucherDto: CreateVoucherDto) {
     return this.vouchersService.create(createVoucherDto);
   }
@@ -21,6 +32,4 @@ export class VouchersController {
   findOne(@Param('id') voucherSymbol: string) {
     return this.vouchersService.findOne(voucherSymbol);
   }
-
-  
 }

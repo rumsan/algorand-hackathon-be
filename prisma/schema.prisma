@@ -7,19 +7,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Beneficiary {
-  uuid    String     @default(uuid())
-  email String  @unique
-  name  String
-  age Int
-  gender String
-  walletAddress String?  
+  uuid          String    @id @unique @default(uuid())
+  email         String    @unique
+  name          String
+  age           Int
+  gender        String
+  walletAddress String?
+  projects      Project[] @relation("BeneficiaryProjects")
+  isArchived    Boolean   @default(false)
+}
+
+model Project {
+  uuid          String        @id @unique @default(uuid())
+  name          String        @unique
+  voucher       Voucher?      @relation(fields: [voucherId], references: [assetId])
+  voucherId     Int?          @unique
+  adminAddress  String[]
+  isArchived    Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  imageUrl      String?
+  beneficiaries Beneficiary[] @relation("BeneficiaryProjects")
 }
 
 model Voucher {
-  uuid    String     @default(uuid())
-  voucherName String
-  voucherSymbol String @unique
-  assetId Int @default(0)
+  uuid          String   @id @unique @default(uuid())
+  voucherName   String
+  voucherSymbol String   @unique
+  assetId       Int      @unique @default(0)
+  project       Project?
 }
