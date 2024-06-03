@@ -49,7 +49,7 @@ export class ProjectController {
   @ApiQuery({ name: 'page', required: false, type: String })
   @ApiQuery({ name: 'id', required: false, type: String })
   async findAllBeneficiary(
-    @Query('id') id: string,
+    @Param('id') id: string,
     @Query('limit', new DefaultValuePipe(4), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
   ) {

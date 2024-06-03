@@ -61,7 +61,7 @@ export class ProjectService {
     const pageNum = page;
     const size = limit;
 
-    const projectWithBeneficiaries = this.prisma.project.findUnique({
+    const projectWithBeneficiaries = await this.prisma.project.findUnique({
       where: { uuid: id },
       select: {
         beneficiaries: {
@@ -76,9 +76,11 @@ export class ProjectService {
     if (!projectWithBeneficiaries) {
       throw new HttpException('Project not found', HttpStatus.BAD_REQUEST);
     }
+
+
     return {
       data: projectWithBeneficiaries.beneficiaries,
-      total: (await projectWithBeneficiaries)._count.beneficiaries,
+      total: projectWithBeneficiaries._count.beneficiaries,
       limit: size,
       page: pageNum,
     };
