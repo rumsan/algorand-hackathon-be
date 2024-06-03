@@ -6,6 +6,7 @@ CREATE TABLE "Beneficiary" (
     "age" INTEGER NOT NULL,
     "gender" TEXT NOT NULL,
     "walletAddress" TEXT,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Beneficiary_pkey" PRIMARY KEY ("uuid")
 );
@@ -14,12 +15,23 @@ CREATE TABLE "Beneficiary" (
 CREATE TABLE "Project" (
     "uuid" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "tokenSymbol" TEXT NOT NULL,
-    "tokenName" TEXT NOT NULL,
+    "voucherId" INTEGER,
     "adminAddress" TEXT[],
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "imageUrl" TEXT,
 
     CONSTRAINT "Project_pkey" PRIMARY KEY ("uuid")
+);
+
+-- CreateTable
+CREATE TABLE "Voucher" (
+    "uuid" TEXT NOT NULL,
+    "voucherName" TEXT NOT NULL,
+    "voucherSymbol" TEXT NOT NULL,
+    "assetId" INTEGER NOT NULL DEFAULT 0,
+
+    CONSTRAINT "Voucher_pkey" PRIMARY KEY ("uuid")
 );
 
 -- CreateTable
@@ -29,16 +41,37 @@ CREATE TABLE "_BeneficiaryProjects" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Beneficiary_uuid_key" ON "Beneficiary"("uuid");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Beneficiary_email_key" ON "Beneficiary"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Project_tokenSymbol_key" ON "Project"("tokenSymbol");
+CREATE UNIQUE INDEX "Project_uuid_key" ON "Project"("uuid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Project_name_key" ON "Project"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Project_voucherId_key" ON "Project"("voucherId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Voucher_uuid_key" ON "Voucher"("uuid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Voucher_voucherSymbol_key" ON "Voucher"("voucherSymbol");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Voucher_assetId_key" ON "Voucher"("assetId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_BeneficiaryProjects_AB_unique" ON "_BeneficiaryProjects"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_BeneficiaryProjects_B_index" ON "_BeneficiaryProjects"("B");
+
+-- AddForeignKey
+ALTER TABLE "Project" ADD CONSTRAINT "Project_voucherId_fkey" FOREIGN KEY ("voucherId") REFERENCES "Voucher"("assetId") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_BeneficiaryProjects" ADD CONSTRAINT "_BeneficiaryProjects_A_fkey" FOREIGN KEY ("A") REFERENCES "Beneficiary"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
