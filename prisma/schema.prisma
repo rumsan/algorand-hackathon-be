@@ -14,8 +14,8 @@ model Beneficiary {
   age           Int
   gender        String
   walletAddress String?
-  projects      Project[] @relation("BeneficiaryProjects")
   isArchived    Boolean   @default(false)
+  projects      Project[] @relation("BeneficiaryProjects")
 }
 
 model Project {

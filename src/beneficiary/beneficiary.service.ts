@@ -31,51 +31,60 @@ export class BeneficiaryService {
     );
 
     try {
-      return await this.prisma.$transaction(async (prisma) => {
-        const beneficiary = await prisma.beneficiary.findUnique({
-          where: { email: CreateBeneficiaryDto?.email },
-        });
+      const createdBeneficiary = await this.prisma.$transaction(
+        async (prisma) => {
+          const existingBeneficiary = await prisma.beneficiary.findUnique({
+            where: { email: CreateBeneficiaryDto?.email },
+          });
 
-        if (beneficiary)
-          throw new ConflictException('Beneficiary already exists');
+          if (existingBeneficiary) {
+            throw new ConflictException('Beneficiary already exists');
+          }
 
-        const createUser = await prisma.beneficiary.create({
-          data: {
-            email: CreateBeneficiaryDto?.email,
-            name: CreateBeneficiaryDto?.name,
-            age: CreateBeneficiaryDto?.age,
-            gender: CreateBeneficiaryDto?.gender,
-            walletAddress: CreateBeneficiaryDto?.walletAddress,
-          },
-        });
-        await prisma.project.update({
-          where: { uuid: CreateBeneficiaryDto?.projectId },
-          data: {
-            beneficiaries: {
-              connect: { uuid: createUser.uuid },
+          const newBeneficiary = await prisma.beneficiary.create({
+            data: {
+              email: CreateBeneficiaryDto.email,
+              name: CreateBeneficiaryDto.name,
+              age: CreateBeneficiaryDto.age,
+              gender: CreateBeneficiaryDto.gender,
+              walletAddress: CreateBeneficiaryDto.walletAddress,
             },
-          },
-        });
-        console.log(this.mailService, 'mailservice');
-        await this.mailService.sendMail({
-          from: 'Rahat <asimneupane11@gmail.com>',
-          to: CreateBeneficiaryDto.email,
-          subject: `Welcome to Rahat`,
-          html: `<h2>Welcome to rahat</h2><p>You have been added as a beneficiary in Rahat. </p><p>Download Pera wallet and scan the QR code below:</p><img width="300" height="300" src="cid:qrcode@nodemailer"/>`,
-          attachments: [
-            {
-              filename: 'qrcode.png',
-              content: qrCodeBuffer,
-              cid: 'qrcode@nodemailer',
-            },
-          ],
-        });
+          });
 
-        return createUser;
+          await prisma.project.update({
+            where: { uuid: CreateBeneficiaryDto.projectId },
+            data: {
+              beneficiaries: {
+                connect: { uuid: newBeneficiary.uuid },
+              },
+            },
+          });
+
+          return newBeneficiary;
+        },
+      );
+
+      const mailResult = await this.mailService.sendMail({
+        from: 'Rahat <asimneupane11@gmail.com>',
+        to: CreateBeneficiaryDto.email,
+        subject: `Welcome to Rahat`,
+        html: `<h2>Welcome to rahat</h2><p>You have been added as a beneficiary in Rahat. </p><p>Download Pera wallet and scan the QR code below:</p><img width="300" height="300" src="cid:qrcode@nodemailer"/>`,
+        attachments: [
+          {
+            filename: 'qrcode.png',
+            content: qrCodeBuffer,
+            cid: 'qrcode@nodemailer',
+          },
+        ],
       });
+
+      console.log('Beneficiary created successfully:', createdBeneficiary);
+      console.log('Mail sent successfully:', mailResult);
+
+      return createdBeneficiary;
     } catch (error) {
-      console.log(error);
-      return error;
+      console.error('Error occurred while creating beneficiary:', error);
+      throw error; // Re-throw the error to handle it at a higher level
     }
   }
 
@@ -105,7 +114,7 @@ export class BeneficiaryService {
     // Fetch paginated data
     const data = await this.prisma.beneficiary.findMany({
       where: whereCondition,
-      select: {projects:true},
+      select: { projects: true },
       skip: (pageNum - 1) * size,
       take: size,
     });
@@ -116,6 +125,7 @@ export class BeneficiaryService {
   async findOne(id: string): Promise<any> {
     const result = await this.prisma.beneficiary.findUnique({
       where: { uuid: id },
+      select: { uuid: true, email: true, name: true, age:true,walletAddress:true,projects:true},
     });
 
     if (!result)
