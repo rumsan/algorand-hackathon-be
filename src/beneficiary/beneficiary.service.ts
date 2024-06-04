@@ -125,12 +125,29 @@ export class BeneficiaryService {
   async findOne(id: string): Promise<any> {
     const result = await this.prisma.beneficiary.findUnique({
       where: { uuid: id },
-      select: { uuid: true, email: true, name: true, age:true,walletAddress:true,projects:true},
+      select: {
+        uuid: true,
+        email: true,
+        name: true,
+        age: true,
+        walletAddress: true,
+        projects: true,
+      },
     });
 
     if (!result)
       throw new HttpException('Beneficiary not found', HttpStatus.BAD_REQUEST);
     return result;
+  }
+
+  async countProjectsBeneficiary(): Promise<{
+    totalBeneficiary: number;
+    totalProject: number;
+  }> {
+    console.log('get service count');
+    const beneCount = await this.prisma.beneficiary.count();
+    const projCount = await this.prisma.project.count();
+    return { totalBeneficiary: beneCount, totalProject: projCount };
   }
 
   // async addProject(ids: string[], projectId: string) {
