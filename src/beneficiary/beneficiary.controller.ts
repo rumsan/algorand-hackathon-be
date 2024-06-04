@@ -18,7 +18,14 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class BeneficiaryController {
   constructor(private readonly beneficiaryService: BeneficiaryService) {}
 
-  @Get(':id')
+  @Get('/get-count')
+  async getCount() {
+    console.log('get count');
+    return await this.beneficiaryService.countProjectsBeneficiary();
+  }
+
+  
+  @Get('/:id')
   async getBeneficiary(@Param('id') id: string) {
     console.log('id', id);
     return this.beneficiaryService.findOne(id);
