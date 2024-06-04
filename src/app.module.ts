@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { VouchersModule } from './vouchers/vouchers.module';
 import { ProjectService } from './project/project.service';
 import { ProjectModule } from './project/project.module';
+import { MultisigModule } from './multisig/multisig.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ProjectModule } from './project/project.module';
     BeneficiaryModule,
     VouchersModule,
     ProjectModule,
+    MultisigModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProjectService, BeneficiaryModule],

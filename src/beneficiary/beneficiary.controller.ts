@@ -18,9 +18,8 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class BeneficiaryController {
   constructor(private readonly beneficiaryService: BeneficiaryService) {}
 
-  @Get(':id')
-  async getBeneficiary(@Param('id') id: string) {
-    console.log('id', id);
+  @Get(':walletAddress')
+  async getBeneficiary(@Param('walletAddress') id: string) {
     return this.beneficiaryService.findOne(id);
   }
 
@@ -51,13 +50,7 @@ export class BeneficiaryController {
   }
   @Post('create-ben')
   sendMail(@Body() sendMailDTO: CreateBeneficiaryDto, @Res() response: any) {
-    console.log('pugyo yeha samma');
-    const mail = this.beneficiaryService.sendMail(sendMailDTO);
-
-    return response.status(200).json({
-      message: 'success',
-      mail,
-    });
+    return this.beneficiaryService.sendMail(sendMailDTO);
   }
 
   // @Post('add-project')

@@ -13,7 +13,7 @@ model Beneficiary {
   name          String
   age           Int
   gender        String
-  walletAddress String?
+  walletAddress String? @unique
   isArchived    Boolean   @default(false)
   projects      Project[] @relation("BeneficiaryProjects")
 }
@@ -36,4 +36,11 @@ model Voucher {
   voucherSymbol String   @unique
   assetId       Int      @unique @default(0)
   project       Project?
+}
+
+model Msig {
+  uuid          String   @id @unique @default(uuid())
+  signature     String
+  walletAddress String
+  projectId     String 
 }

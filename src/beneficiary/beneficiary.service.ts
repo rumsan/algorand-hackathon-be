@@ -30,62 +30,68 @@ export class BeneficiaryService {
       decryptMessage(CreateBeneficiaryDto.mnemonics),
     );
 
-    try {
-      const createdBeneficiary = await this.prisma.$transaction(
-        async (prisma) => {
-          const existingBeneficiary = await prisma.beneficiary.findUnique({
-            where: { email: CreateBeneficiaryDto?.email },
-          });
-
-          if (existingBeneficiary) {
-            throw new ConflictException('Beneficiary already exists');
-          }
-
-          const newBeneficiary = await prisma.beneficiary.create({
-            data: {
-              email: CreateBeneficiaryDto.email,
-              name: CreateBeneficiaryDto.name,
-              age: CreateBeneficiaryDto.age,
-              gender: CreateBeneficiaryDto.gender,
-              walletAddress: CreateBeneficiaryDto.walletAddress,
-            },
-          });
-
-          await prisma.project.update({
-            where: { uuid: CreateBeneficiaryDto.projectId },
-            data: {
-              beneficiaries: {
-                connect: { uuid: newBeneficiary.uuid },
-              },
-            },
-          });
-
-          return newBeneficiary;
+    if(await this.findOne(CreateBeneficiaryDto.walletAddress)) {
+      return await this.prisma.beneficiary.update({
+        where: {
+          walletAddress: CreateBeneficiaryDto.walletAddress
         },
-      );
-
-      const mailResult = await this.mailService.sendMail({
-        from: 'Rahat <asimneupane11@gmail.com>',
-        to: CreateBeneficiaryDto.email,
-        subject: `Welcome to Rahat`,
-        html: `<h2>Welcome to rahat</h2><p>You have been added as a beneficiary in Rahat. </p><p>Download Pera wallet and scan the QR code below:</p><img width="300" height="300" src="cid:qrcode@nodemailer"/>`,
-        attachments: [
-          {
-            filename: 'qrcode.png',
-            content: qrCodeBuffer,
-            cid: 'qrcode@nodemailer',
-          },
-        ],
+        data: {
+          projects: {
+            connect: {uuid: CreateBeneficiaryDto.projectId}
+          }
+        },
       });
-
-      console.log('Beneficiary created successfully:', createdBeneficiary);
-      console.log('Mail sent successfully:', mailResult);
-
-      return createdBeneficiary;
-    } catch (error) {
-      console.error('Error occurred while creating beneficiary:', error);
-      throw error; // Re-throw the error to handle it at a higher level
     }
+    else {
+      try {
+        const createdBeneficiary = await this.prisma.$transaction(
+          async (prisma) => {
+            const existingBeneficiary = await prisma.beneficiary.findUnique({
+              where: { email: CreateBeneficiaryDto?.email },
+            });
+  
+            if (existingBeneficiary) {
+              throw new ConflictException('Beneficiary already exists');
+            }
+  
+            const newBeneficiary = await prisma.beneficiary.create({
+              data: {
+                email: CreateBeneficiaryDto.email,
+                name: CreateBeneficiaryDto.name,
+                age: CreateBeneficiaryDto.age,
+                gender: CreateBeneficiaryDto.gender,
+                walletAddress: CreateBeneficiaryDto.walletAddress,
+                projects: {
+                  connect: {uuid: CreateBeneficiaryDto.projectId}
+                }
+              },
+            });
+  
+            return newBeneficiary;
+          },
+        );
+  
+        const mailResult = await this.mailService.sendMail({
+          from: 'Rahat <asimneupane11@gmail.com>',
+          to: CreateBeneficiaryDto.email,
+          subject: `Welcome to Rahat`,
+          html: `<h2>Welcome to rahat</h2><p>You have been added as a beneficiary in Rahat. </p><p>Download Pera wallet and scan the QR code below:</p><img width="300" height="300" src="cid:qrcode@nodemailer"/>`,
+          attachments: [
+            {
+              filename: 'qrcode.png',
+              content: qrCodeBuffer,
+              cid: 'qrcode@nodemailer',
+            },
+          ],
+        });
+  
+        return createdBeneficiary;
+      } catch (error) {
+        console.error('Error occurred while creating beneficiary:', error);
+        throw error; // Re-throw the error to handle it at a higher level
+      }
+    }
+  
   }
 
   async findAll(
@@ -122,10 +128,10 @@ export class BeneficiaryService {
     return { data, total, limit: size, page: pageNum };
   }
 
-  async findOne(id: string): Promise<any> {
+  async findOne(walletAddress: string): Promise<any> {
     const result = await this.prisma.beneficiary.findUnique({
-      where: { uuid: id },
-      select: { uuid: true, email: true, name: true, age:true,walletAddress:true,projects:true},
+      where: { walletAddress },
+      select: { uuid: true, email: true, name: true, age:true, walletAddress:true, projects:true}
     });
 
     if (!result)

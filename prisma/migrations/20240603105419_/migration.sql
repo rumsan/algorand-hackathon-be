@@ -35,6 +35,16 @@ CREATE TABLE "Voucher" (
 );
 
 -- CreateTable
+CREATE TABLE "Msig" (
+    "uuid" TEXT NOT NULL,
+    "signature" TEXT NOT NULL,
+    "walletAddress" TEXT NOT NULL,
+    "projectId" TEXT NOT NULL,
+
+    CONSTRAINT "Msig_pkey" PRIMARY KEY ("uuid")
+);
+
+-- CreateTable
 CREATE TABLE "_BeneficiaryProjects" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
@@ -63,6 +73,12 @@ CREATE UNIQUE INDEX "Voucher_voucherSymbol_key" ON "Voucher"("voucherSymbol");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Voucher_assetId_key" ON "Voucher"("assetId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Msig_uuid_key" ON "Msig"("uuid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Msig_projectId_key" ON "Msig"("projectId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_BeneficiaryProjects_AB_unique" ON "_BeneficiaryProjects"("A", "B");
