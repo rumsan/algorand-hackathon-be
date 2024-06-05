@@ -150,6 +150,15 @@ export class BeneficiaryService {
     return { totalBeneficiary: beneCount, totalProject: projCount };
   }
 
+  async countGender(): Promise<any> {
+    const male = await this.prisma.beneficiary.groupBy({
+      by: ['gender'],
+      _count: true,
+    });
+    console.log('asfj');
+    console.log(male);
+  }
+
   // async addProject(ids: string[], projectId: string) {
   //   const updates = ids.map((id) => {
   //     this.prisma.beneficiary.update({

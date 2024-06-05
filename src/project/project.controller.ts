@@ -38,6 +38,7 @@ export class ProjectController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('name') name?: string,
   ) {
+    console.log('controller')
     return this.projectService.findAll(limit, page, { name });
   }
 

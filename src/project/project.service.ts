@@ -23,7 +23,7 @@ export class ProjectService {
     page?: number,
     search?: { name?: string },
   ): Promise<getReturn> {
-    console.log(limit, page, search);
+    console.log('sercice');
     const pageNum = page;
     const size = limit;
 
@@ -77,7 +77,6 @@ export class ProjectService {
       throw new HttpException('Project not found', HttpStatus.BAD_REQUEST);
     }
 
-
     return {
       data: projectWithBeneficiaries.beneficiaries,
       total: projectWithBeneficiaries._count.beneficiaries,
@@ -90,6 +89,7 @@ export class ProjectService {
   async findOne(id: string) {
     const result = await this.prisma.project.findUnique({
       where: { uuid: id },
+      include:{beneficiaries:true}
     });
 
     if (!result)

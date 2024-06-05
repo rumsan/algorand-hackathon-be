@@ -1,10 +1,13 @@
+-- CreateEnum
+CREATE TYPE "GENDER" AS ENUM ('MALE', 'FEMALE', 'OTHER');
+
 -- CreateTable
 CREATE TABLE "Beneficiary" (
     "uuid" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "age" INTEGER NOT NULL,
-    "gender" TEXT NOT NULL,
+    "gender" "GENDER" NOT NULL,
     "walletAddress" TEXT,
     "isArchived" BOOLEAN NOT NULL DEFAULT false,
 
@@ -20,8 +23,23 @@ CREATE TABLE "Project" (
     "isArchived" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "imageUrl" TEXT,
+    "vendorId" TEXT,
 
     CONSTRAINT "Project_pkey" PRIMARY KEY ("uuid")
+);
+
+-- CreateTable
+CREATE TABLE "Vendor" (
+    "uuid" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "location" TEXT NOT NULL,
+    "walletAddress" TEXT NOT NULL,
+    "collectedAsa" INTEGER DEFAULT 0,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "projectId" TEXT NOT NULL,
+
+    CONSTRAINT "Vendor_pkey" PRIMARY KEY ("uuid")
 );
 
 -- CreateTable
@@ -56,6 +74,18 @@ CREATE UNIQUE INDEX "Project_name_key" ON "Project"("name");
 CREATE UNIQUE INDEX "Project_voucherId_key" ON "Project"("voucherId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Project_vendorId_key" ON "Project"("vendorId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Vendor_uuid_key" ON "Vendor"("uuid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Vendor_email_key" ON "Vendor"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Vendor_projectId_key" ON "Vendor"("projectId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Voucher_uuid_key" ON "Voucher"("uuid");
 
 -- CreateIndex
@@ -72,6 +102,9 @@ CREATE INDEX "_BeneficiaryProjects_B_index" ON "_BeneficiaryProjects"("B");
 
 -- AddForeignKey
 ALTER TABLE "Project" ADD CONSTRAINT "Project_voucherId_fkey" FOREIGN KEY ("voucherId") REFERENCES "Voucher"("assetId") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Vendor" ADD CONSTRAINT "Vendor_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_BeneficiaryProjects" ADD CONSTRAINT "_BeneficiaryProjects_A_fkey" FOREIGN KEY ("A") REFERENCES "Beneficiary"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;

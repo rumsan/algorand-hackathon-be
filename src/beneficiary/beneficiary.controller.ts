@@ -20,11 +20,19 @@ export class BeneficiaryController {
 
   @Get('/get-count')
   async getCount() {
-    console.log('get count');
-    return await this.beneficiaryService.countProjectsBeneficiary();
+    try {
+      return await this.beneficiaryService.countProjectsBeneficiary();
+    } catch (e) {
+      console.log('error', e);
+      return e;
+    }
+  }
+  @Get('/count-gender')
+  getGenderCount() {
+    console.log('pugyo');
+    return this.beneficiaryService.countGender();
   }
 
-  
   @Get('/:id')
   async getBeneficiary(@Param('id') id: string) {
     console.log('id', id);

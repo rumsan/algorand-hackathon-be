@@ -7,12 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum GENDER {
+  MALE
+  FEMALE
+  OTHER
+}
 model Beneficiary {
   uuid          String    @id @unique @default(uuid())
   email         String    @unique
   name          String
   age           Int
-  gender        String
+  gender        GENDER
   walletAddress String?
   isArchived    Boolean   @default(false)
   projects      Project[] @relation("BeneficiaryProjects")
@@ -27,8 +32,23 @@ model Project {
   isArchived    Boolean       @default(false)
   createdAt     DateTime      @default(now())
   imageUrl      String?
+  vendor      Vendor?      
+  vendorId      String?       @unique
   beneficiaries Beneficiary[] @relation("BeneficiaryProjects")
 }
+
+model Vendor {
+  uuid          String  @id @unique @default(uuid())
+  email         String  @unique
+  name          String
+  location      String
+  walletAddress String
+  collectedAsa  Int?    @default(0)
+  isArchived    Boolean @default(false)
+   project       Project @relation(fields: [projectId], references: [uuid])
+  projectId     String  @unique
+}
+
 
 model Voucher {
   uuid          String   @id @unique @default(uuid())
