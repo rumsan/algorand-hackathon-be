@@ -134,9 +134,9 @@ export class BeneficiaryService {
     return { data, total, limit: size, page: pageNum };
   }
 
-  async findOne(walletAddress: string): Promise<any> {
+  async findOne(uuid: string): Promise<any> {
     const result = await this.prisma.beneficiary.findUnique({
-      where: { walletAddress },
+      where: { uuid },
       select: {
         uuid: true,
         email: true,

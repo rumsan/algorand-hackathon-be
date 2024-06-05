@@ -7,7 +7,7 @@ CREATE TABLE "Beneficiary" (
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "age" INTEGER NOT NULL,
-    "gender" "GENDER" NOT NULL,
+    "gender" TEXT NOT NULL,
     "walletAddress" TEXT,
     "isArchived" BOOLEAN NOT NULL DEFAULT false,
 
@@ -75,6 +75,9 @@ CREATE UNIQUE INDEX "Beneficiary_uuid_key" ON "Beneficiary"("uuid");
 CREATE UNIQUE INDEX "Beneficiary_email_key" ON "Beneficiary"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Beneficiary_walletAddress_key" ON "Beneficiary"("walletAddress");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Project_uuid_key" ON "Project"("uuid");
 
 -- CreateIndex
@@ -106,9 +109,6 @@ CREATE UNIQUE INDEX "Voucher_assetId_key" ON "Voucher"("assetId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Msig_uuid_key" ON "Msig"("uuid");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Msig_projectId_key" ON "Msig"("projectId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_BeneficiaryProjects_AB_unique" ON "_BeneficiaryProjects"("A", "B");
