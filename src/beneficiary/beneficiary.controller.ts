@@ -18,8 +18,24 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class BeneficiaryController {
   constructor(private readonly beneficiaryService: BeneficiaryService) {}
 
-  @Get(':walletAddress')
-  async getBeneficiary(@Param('walletAddress') id: string) {
+  @Get('/get-count')
+  async getCount() {
+    try {
+      return await this.beneficiaryService.countProjectsBeneficiary();
+    } catch (e) {
+      console.log('error', e);
+      return e;
+    }
+  }
+  @Get('/count-gender')
+  getGenderCount() {
+    console.log('pugyo');
+    return this.beneficiaryService.countGender();
+  }
+
+  @Get('/:id')
+  async getBeneficiary(@Param('id') id: string) {
+    console.log('id', id);
     return this.beneficiaryService.findOne(id);
   }
 

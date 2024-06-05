@@ -9,6 +9,7 @@ import { VouchersModule } from './vouchers/vouchers.module';
 import { ProjectService } from './project/project.service';
 import { ProjectModule } from './project/project.module';
 import { MultisigModule } from './multisig/multisig.module';
+import { VendorModule } from './vendor/vendor.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { MultisigModule } from './multisig/multisig.module';
     VouchersModule,
     ProjectModule,
     MultisigModule,
+    VendorModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProjectService, BeneficiaryModule],

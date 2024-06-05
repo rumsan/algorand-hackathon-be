@@ -70,7 +70,11 @@ export class VouchersService {
     return this.prisma.voucher.findMany({});
   }
 
-  findOne(voucherSymbol: string) {
-    return this.prisma.voucher.findUnique({ where: { voucherSymbol } });
+  async findOne(assetId: number) {
+    return await this.prisma.voucher.findUnique({ where: { assetId } });
+  }
+
+  async findSymbol(voucherSymbol: string) {
+    return await this.prisma.voucher.findUnique({ where: { voucherSymbol } });
   }
 }
