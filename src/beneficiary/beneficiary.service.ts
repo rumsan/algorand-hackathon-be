@@ -30,7 +30,12 @@ export class BeneficiaryService {
       decryptMessage(CreateBeneficiaryDto.mnemonics),
     );
 
-    if(await this.findOne(CreateBeneficiaryDto.walletAddress)) {
+    const ben = await this.prisma.beneficiary.findUnique({
+      where: { walletAddress: CreateBeneficiaryDto.walletAddress }
+    });
+
+    if(ben) {
+      console.log("Adding to existing ben")
       return await this.prisma.beneficiary.update({
         where: {
           walletAddress: CreateBeneficiaryDto.walletAddress
@@ -43,6 +48,7 @@ export class BeneficiaryService {
       });
     }
     else {
+      console.log("Creating new ben")
       try {
         const createdBeneficiary = await this.prisma.$transaction(
           async (prisma) => {
@@ -85,7 +91,7 @@ export class BeneficiaryService {
           ],
         });
   
-        return createdBeneficiary;
+        return mailResult;
       } catch (error) {
         console.error('Error occurred while creating beneficiary:', error);
         throw error; // Re-throw the error to handle it at a higher level
