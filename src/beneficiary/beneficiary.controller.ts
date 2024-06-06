@@ -18,6 +18,12 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class BeneficiaryController {
   constructor(private readonly beneficiaryService: BeneficiaryService) {}
 
+
+  @Get('/beneficiaries-age-data')
+  async getBeneficiariesAgeData() {
+    return this.beneficiaryService.TotalProjectBeneficiaryAge();
+  }
+
   @Get('/get-count')
   async getCount() {
     try {
@@ -31,6 +37,11 @@ export class BeneficiaryController {
   getGenderCount() {
     console.log('pugyo');
     return this.beneficiaryService.countGender();
+  }
+
+  @Get('find-by-wallet/:id')
+  async findByWallet(@Param('id') id: string) {
+    return this.beneficiaryService.findByWalletAddress(id);
   }
 
   @Get('/:id')

@@ -21,6 +21,17 @@ import { AddBeneficiaryDto, UpdateProjectDto } from './dto/update-project.dto';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
+  @Get('/chart-age/:id')
+  @ApiOperation({ summary: 'Get one project' })
+  async ProjectBeneficiaryAge(@Param('id') id: string) {
+    return this.projectService.ProjectBeneficiaryAgeChart(id);
+  }
+  @Get('/chart-gender/:id')
+  @ApiOperation({ summary: 'Get one project' })
+  async ProjectBeneficiaryGender(@Param('id') id: string) {
+    return this.projectService.countGender(id);
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new Project' })
   async create(@Body() createProjectDto: CreateProjectDto) {
@@ -38,7 +49,7 @@ export class ProjectController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('name') name?: string,
   ) {
-    console.log('controller')
+    console.log('controller');
     return this.projectService.findAll(limit, page, { name });
   }
 

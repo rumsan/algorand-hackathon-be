@@ -35,6 +35,7 @@ export class VouchersController {
 
   @Get(':id')
   findOne(@Param('id') assetId: number) {
+    console.log('id', assetId);
     return this.vouchersService.findOne(assetId);
   }
 }

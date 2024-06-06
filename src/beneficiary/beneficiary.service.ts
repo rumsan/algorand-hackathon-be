@@ -18,6 +18,20 @@ export type getReturn = {
   page: number;
 };
 
+  const ageRanges = [
+  { label: '0-10', min: 0, max: 10 },
+  { label: '11-20', min: 11, max: 20 },
+  { label: '21-30', min: 21, max: 30 },
+  { label: '31-40', min: 31, max: 40 },
+  { label: '41-50', min: 41, max: 50 },
+  { label: '51-60', min: 51, max: 60 },
+  { label: '61-70', min: 61, max: 70 },
+  { label: '71-80', min: 71, max: 80 },
+  { label: '81-90', min: 81, max: 90 },
+  { label: '91-100', min: 91, max: 100 },
+];
+
+
 @Injectable()
 export class BeneficiaryService {
   constructor(
@@ -25,41 +39,74 @@ export class BeneficiaryService {
     private prisma: PrismaAppService,
   ) {}
 
+  async TotalProjectBeneficiaryAge() {
+    return await this.getBeneficiaryAgeGroups();
+  }
+  private groupByAge(beneficiaries: { age: number }[]): {
+    [key: string]: number;
+  } {
+    const ageGroups = ageRanges.reduce(
+      (acc, range) => {
+        acc[range.label] = 0;
+        return acc;
+      },
+      {} as { [key: string]: number },
+    );
+
+    beneficiaries.forEach(({ age }) => {
+      const range = ageRanges.find(
+        (range) => age >= range.min && age <= range.max,
+      );
+      if (range) {
+        ageGroups[range.label]++;
+      }
+    });
+
+    return ageGroups;
+  }
+
+  async getBeneficiaryAgeGroups(): Promise<{ [key: string]: number }> {
+    const beneficiaries = await this.prisma.beneficiary.findMany({
+      select: { age: true },
+    });
+
+    return this.groupByAge(beneficiaries);
+  }
+
   async sendMail(CreateBeneficiaryDto: CreateBeneficiaryDto) {
     const qrCodeBuffer = await QRCode.toBuffer(
       decryptMessage(CreateBeneficiaryDto.mnemonics),
     );
 
     const ben = await this.prisma.beneficiary.findUnique({
-      where: { walletAddress: CreateBeneficiaryDto.walletAddress }
+      where: { walletAddress: CreateBeneficiaryDto.walletAddress },
     });
 
-    if(ben) {
-      console.log("Adding to existing ben")
+    if (ben) {
+      console.log('Adding to existing ben');
       return await this.prisma.beneficiary.update({
         where: {
-          walletAddress: CreateBeneficiaryDto.walletAddress
+          walletAddress: CreateBeneficiaryDto.walletAddress,
         },
         data: {
           projects: {
-            connect: {uuid: CreateBeneficiaryDto.projectId}
-          }
+            connect: { uuid: CreateBeneficiaryDto.projectId },
+          },
         },
       });
-    }
-    else {
-      console.log("Creating new ben")
+    } else {
+      console.log('Creating new ben');
       try {
         const createdBeneficiary = await this.prisma.$transaction(
           async (prisma) => {
             const existingBeneficiary = await prisma.beneficiary.findUnique({
               where: { email: CreateBeneficiaryDto?.email },
             });
-  
+
             if (existingBeneficiary) {
               throw new ConflictException('Beneficiary already exists');
             }
-  
+
             const newBeneficiary = await prisma.beneficiary.create({
               data: {
                 email: CreateBeneficiaryDto.email,
@@ -68,15 +115,15 @@ export class BeneficiaryService {
                 gender: CreateBeneficiaryDto.gender,
                 walletAddress: CreateBeneficiaryDto.walletAddress,
                 projects: {
-                  connect: {uuid: CreateBeneficiaryDto.projectId}
-                }
+                  connect: { uuid: CreateBeneficiaryDto.projectId },
+                },
               },
             });
-  
+
             return newBeneficiary;
           },
         );
-  
+
         const mailResult = await this.mailService.sendMail({
           from: 'Rahat <asimneupane11@gmail.com>',
           to: CreateBeneficiaryDto.email,
@@ -90,14 +137,13 @@ export class BeneficiaryService {
             },
           ],
         });
-  
+
         return mailResult;
       } catch (error) {
         console.error('Error occurred while creating beneficiary:', error);
         throw error; // Re-throw the error to handle it at a higher level
       }
     }
-  
   }
 
   async findAll(
@@ -163,12 +209,24 @@ export class BeneficiaryService {
   }
 
   async countGender(): Promise<any> {
-    const male = await this.prisma.beneficiary.groupBy({
+    const count = await this.prisma.beneficiary.groupBy({
       by: ['gender'],
       _count: true,
     });
     console.log('asfj');
-    console.log(male);
+    console.log(count);
+    return count;
+  }
+
+  async findByWalletAddress(walletAddress: string) {
+    const user = await this.prisma.beneficiary.findUnique({
+      where: { walletAddress },
+      include: { projects: { include: { voucher: true, vendor: true } } },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 
   // async addProject(ids: string[], projectId: string) {
