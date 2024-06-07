@@ -11,7 +11,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { BeneficiaryService } from './beneficiary.service';
-import { CreateBeneficiaryDto, GetBeneficiaryDto } from './dto/send-mail.dto';
+import { CreateBeneficiaryDto, GetBeneficiaryDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('beneficiary')
@@ -22,7 +22,7 @@ export class BeneficiaryController {
 
   @Get('/beneficiaries-age-data')
   async getBeneficiariesAgeData() {
-    return this.beneficiaryService.TotalProjectBeneficiaryAge();
+    return this.beneficiaryService.totalProjectBeneficiaryAge();
   }
 
   @Get('/get-count')
@@ -82,8 +82,8 @@ export class BeneficiaryController {
 
 
   @Patch('/:id')
-  updateBeneficiary(@Param('id') id: string, @Body() sendMailDTO: CreateBeneficiaryDto) {
-
+  updateBulkBeneficiary(@Body() beneficiaryData: UpdateBeneficiaryDto) {
+    return this.beneficiaryService.updateBulkBeneficiary(beneficiaryData)
   }
   
 }
