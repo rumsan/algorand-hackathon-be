@@ -10,6 +10,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { PrismaAppService } from 'src/prisma/prisma.service';
 import * as QRCode from 'qrcode';
 import { decryptMessage } from 'src/utils/decrypt';
+import { groupByAge } from 'src/utils/groupByAge';
+import { BENEFICIARY_STATUS } from '@prisma/client';
 
 export type getReturn = {
   data: any[];
@@ -18,20 +20,6 @@ export type getReturn = {
   page: number;
 };
 
-  const ageRanges = [
-  { label: '0-10', min: 0, max: 10 },
-  { label: '11-20', min: 11, max: 20 },
-  { label: '21-30', min: 21, max: 30 },
-  { label: '31-40', min: 31, max: 40 },
-  { label: '41-50', min: 41, max: 50 },
-  { label: '51-60', min: 51, max: 60 },
-  { label: '61-70', min: 61, max: 70 },
-  { label: '71-80', min: 71, max: 80 },
-  { label: '81-90', min: 81, max: 90 },
-  { label: '91-100', min: 91, max: 100 },
-];
-
-
 @Injectable()
 export class BeneficiaryService {
   constructor(
@@ -39,38 +27,25 @@ export class BeneficiaryService {
     private prisma: PrismaAppService,
   ) {}
 
-  async TotalProjectBeneficiaryAge() {
-    return await this.getBeneficiaryAgeGroups();
-  }
-  private groupByAge(beneficiaries: { age: number }[]): {
-    [key: string]: number;
-  } {
-    const ageGroups = ageRanges.reduce(
-      (acc, range) => {
-        acc[range.label] = 0;
-        return acc;
+  async updateBulkBeneficiary(beneficiaryAddresses: UpdateBeneficiaryDto): Promise<any> {
+    console.log(beneficiaryAddresses)
+    return await this.prisma.beneficiary.updateMany({
+      where: {
+        walletAddress: {
+          in: beneficiaryAddresses.addresses
+        }
       },
-      {} as { [key: string]: number },
-    );
-
-    beneficiaries.forEach(({ age }) => {
-      const range = ageRanges.find(
-        (range) => age >= range.min && age <= range.max,
-      );
-      if (range) {
-        ageGroups[range.label]++;
+      data: {
+        status: beneficiaryAddresses.status
       }
-    });
-
-    return ageGroups;
+    })
   }
 
-  async getBeneficiaryAgeGroups(): Promise<{ [key: string]: number }> {
+  async totalProjectBeneficiaryAge() {
     const beneficiaries = await this.prisma.beneficiary.findMany({
       select: { age: true },
     });
-
-    return this.groupByAge(beneficiaries);
+    return groupByAge(beneficiaries);
   }
 
   async sendMail(CreateBeneficiaryDto: CreateBeneficiaryDto) {
@@ -95,7 +70,7 @@ export class BeneficiaryService {
       });
     } else {
       try {
-        const createdBeneficiary = await this.prisma.$transaction(
+        await this.prisma.$transaction(
           async (prisma) => {
             const existingBeneficiary = await prisma.beneficiary.findUnique({
               where: { email: CreateBeneficiaryDto?.email },
@@ -122,8 +97,6 @@ export class BeneficiaryService {
           },
         );
 
-        console.log("Sending mail")
-
         const mailResult = await this.mailService.sendMail({
           from: 'Rahat <asimneupane11@gmail.com>',
           to: CreateBeneficiaryDto.email,
@@ -138,12 +111,10 @@ export class BeneficiaryService {
           ],
         });
 
-        console.log(mailResult)
-
         return mailResult;
       } catch (error) {
         console.error('Error occurred while creating beneficiary:', error);
-        throw error; // Re-throw the error to handle it at a higher level
+        throw error;
       }
     }
   }
@@ -151,7 +122,7 @@ export class BeneficiaryService {
   async findAll(
     limit?: number,
     page?: number,
-    search?: { email?: string; walletAddress?: string },
+    search?: { email?: string; walletAddress?: string }
   ): Promise<getReturn> {
     const pageNum = page;
     const size = limit;
@@ -165,12 +136,13 @@ export class BeneficiaryService {
       whereCondition.walletAddress = search.walletAddress;
     }
 
+    console.log(status)
+
     // Get total count
     const total = await this.prisma.beneficiary.count({
       where: whereCondition,
     });
 
-    console.log(whereCondition);
     // Fetch paginated data
     const data = await this.prisma.beneficiary.findMany({
       where: whereCondition,
@@ -215,8 +187,6 @@ export class BeneficiaryService {
       by: ['gender'],
       _count: true,
     });
-    console.log('asfj');
-    console.log(count);
     return count;
   }
 
@@ -231,7 +201,4 @@ export class BeneficiaryService {
     return user;
   }
 
-  async updateBeneficiary(id: string, string: UpdateBeneficiaryDto): Promise<any> {
-
   }
-}
