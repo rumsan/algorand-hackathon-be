@@ -8,6 +8,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { VouchersModule } from './vouchers/vouchers.module';
 import { ProjectService } from './project/project.service';
 import { ProjectModule } from './project/project.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { AdminsModule } from './admins/admins.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { ProjectModule } from './project/project.module';
     BeneficiaryModule,
     VouchersModule,
     ProjectModule,
+    DashboardModule,
+    AdminsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProjectService, BeneficiaryModule],
