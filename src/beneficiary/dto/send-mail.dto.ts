@@ -102,3 +102,14 @@ export class GetBeneficiaryDto {
   })
   limit?: string;
 }
+
+
+export class UpdateBeneficiaryDto {
+
+  @IsString()
+  @ApiProperty({
+    description: 'Status (NOT_ASSIGNED, FREEZED, UNFREEZED)',
+    example: 'FREEZED',
+  })
+  status: 'NOT_ASSIGNED' | 'FREEZED' | 'UNFREEZED';
+}

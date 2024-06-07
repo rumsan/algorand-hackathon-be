@@ -12,12 +12,20 @@ enum GENDER {
   FEMALE
   OTHER
 }
+
+enum BENEFICIARY_STATUS {
+  NOT_ASSIGNED
+  FREEZED
+  UNFREEZED
+}
+
 model Beneficiary {
   uuid          String    @id @unique @default(uuid())
   email         String    @unique
   name          String
   age           Int
   gender        String
+  status        BENEFICIARY_STATUS @default(NOT_ASSIGNED)
   walletAddress String? @unique
   isArchived    Boolean   @default(false)
   projects      Project[] @relation("BeneficiaryProjects")

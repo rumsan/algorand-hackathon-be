@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "GENDER" AS ENUM ('MALE', 'FEMALE', 'OTHER');
 
+-- CreateEnum
+CREATE TYPE "BENEFICIARY_STATUS" AS ENUM ('NOT_ASSIGNED', 'FREEZED', 'UNFREEZED');
+
 -- CreateTable
 CREATE TABLE "Beneficiary" (
     "uuid" TEXT NOT NULL,
@@ -8,6 +11,7 @@ CREATE TABLE "Beneficiary" (
     "name" TEXT NOT NULL,
     "age" INTEGER NOT NULL,
     "gender" TEXT NOT NULL,
+    "status" "BENEFICIARY_STATUS" NOT NULL DEFAULT 'NOT_ASSIGNED',
     "walletAddress" TEXT,
     "isArchived" BOOLEAN NOT NULL DEFAULT false,
 

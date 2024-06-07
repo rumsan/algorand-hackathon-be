@@ -8,6 +8,7 @@ import {
   DefaultValuePipe,
   ParseIntPipe,
   Param,
+  Patch,
 } from '@nestjs/common';
 import { BeneficiaryService } from './beneficiary.service';
 import { CreateBeneficiaryDto, GetBeneficiaryDto } from './dto/send-mail.dto';
@@ -29,7 +30,6 @@ export class BeneficiaryController {
   }
   @Get('/count-gender')
   getGenderCount() {
-    console.log('pugyo');
     return this.beneficiaryService.countGender();
   }
 
@@ -69,11 +69,10 @@ export class BeneficiaryController {
     return this.beneficiaryService.sendMail(sendMailDTO);
   }
 
-  // @Post('add-project')
-  // async addProject(
-  //   @Body('ids') ids: string[],
-  //   @Body('projectId') projectId: string,
-  // ): Promise<void> {
-  //   await this.beneficiaryService.addProject(ids, projectId);
-  // }
+
+  @Patch('/:id')
+  updateBeneficiary(@Param('id') id: string, @Body() sendMailDTO: CreateBeneficiaryDto) {
+
+  }
+  
 }

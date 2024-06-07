@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateBeneficiaryDto } from './dto/send-mail.dto';
+import { CreateBeneficiaryDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { PrismaAppService } from 'src/prisma/prisma.service';
 import * as QRCode from 'qrcode';
@@ -171,17 +171,7 @@ export class BeneficiaryService {
     console.log(male);
   }
 
-  // async addProject(ids: string[], projectId: string) {
-  //   const updates = ids.map((id) => {
-  //     this.prisma.beneficiary.update({
-  //       where: { uuid: id },
-  //       data: {
-  //         projects: {
-  //           connect: { uuid: projectId },
-  //         },
-  //       },
-  //     });
-  //   });
-  //   await Promise.all(updates);
-  // }
+  async updateBeneficiary(id: string, string: UpdateBeneficiaryDto): Promise<any> {
+    
+  }
 }
