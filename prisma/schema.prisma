@@ -24,7 +24,7 @@ model Beneficiary {
   email         String    @unique
   name          String
   age           Int
-  gender        String
+  gender        GENDER
   status        BENEFICIARY_STATUS @default(NOT_ASSIGNED)
   walletAddress String? @unique
   isArchived    Boolean   @default(false)
@@ -37,6 +37,7 @@ model Project {
   voucher       Voucher?      @relation(fields: [voucherId], references: [assetId])
   voucherId     Int?          @unique
   adminAddress  String[]
+  superAdmin    String
   isArchived    Boolean       @default(false)
   createdAt     DateTime      @default(now())
   imageUrl      String?

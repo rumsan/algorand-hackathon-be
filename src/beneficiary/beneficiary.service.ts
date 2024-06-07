@@ -83,7 +83,6 @@ export class BeneficiaryService {
     });
 
     if (ben) {
-      console.log('Adding to existing ben');
       return await this.prisma.beneficiary.update({
         where: {
           walletAddress: CreateBeneficiaryDto.walletAddress,
@@ -95,7 +94,6 @@ export class BeneficiaryService {
         },
       });
     } else {
-      console.log('Creating new ben');
       try {
         const createdBeneficiary = await this.prisma.$transaction(
           async (prisma) => {
@@ -124,6 +122,8 @@ export class BeneficiaryService {
           },
         );
 
+        console.log("Sending mail")
+
         const mailResult = await this.mailService.sendMail({
           from: 'Rahat <asimneupane11@gmail.com>',
           to: CreateBeneficiaryDto.email,
@@ -137,6 +137,8 @@ export class BeneficiaryService {
             },
           ],
         });
+
+        console.log(mailResult)
 
         return mailResult;
       } catch (error) {
@@ -230,6 +232,6 @@ export class BeneficiaryService {
   }
 
   async updateBeneficiary(id: string, string: UpdateBeneficiaryDto): Promise<any> {
-    
+
   }
 }

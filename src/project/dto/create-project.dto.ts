@@ -36,6 +36,13 @@ export class CreateProjectDto {
   @IsOptional()
   imageUrl: string;
 
+  @ApiProperty({
+    description: 'Super Admin Address',
+    example: 'This is a project Image Url',
+  })
+  @IsString()
+  superAdmin: string;
+
   //   @ApiProperty({
   //     description: 'Array of beneficiaries associated with the project',
   //     type: () => [CreateBeneficiaryDto],

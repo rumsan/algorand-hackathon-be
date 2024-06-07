@@ -62,8 +62,8 @@ export class BeneficiaryController {
     description: 'The found record',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  getBlogs(
-    @Query('limit', new DefaultValuePipe(4), ParseIntPipe) limit: number,
+  getAllBeneficiary(
+    @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query() getBeneficiaryDto: GetBeneficiaryDto,
   ) {
