@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -106,10 +107,10 @@ export class GetBeneficiaryDto {
 
 export class UpdateBeneficiaryDto {
 
-  @IsString()
+  @IsArray()
   @ApiProperty({
     description: 'Address of beneficiary',
-    example: 'BQ63F7VH6FYQNFUK6YN6FGHI55FPE74FJT7EQ4NMBKHPT3QFSWJGXPPISA',
+    example: ['BQ63F7VH6FYQNFUK6YN6FGHI55FPE74FJT7EQ4NMBKHPT3QFSWJGXPPISA'],
   })
   addresses: string[];
 

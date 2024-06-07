@@ -11,6 +11,7 @@ import { PrismaAppService } from 'src/prisma/prisma.service';
 import * as QRCode from 'qrcode';
 import { decryptMessage } from 'src/utils/decrypt';
 import { groupByAge } from 'src/utils/groupByAge';
+import { BENEFICIARY_STATUS } from '@prisma/client';
 
 export type getReturn = {
   data: any[];
@@ -26,9 +27,8 @@ export class BeneficiaryService {
     private prisma: PrismaAppService,
   ) {}
 
-
-
   async updateBulkBeneficiary(beneficiaryAddresses: UpdateBeneficiaryDto): Promise<any> {
+    console.log(beneficiaryAddresses)
     return await this.prisma.beneficiary.updateMany({
       where: {
         walletAddress: {
@@ -122,7 +122,7 @@ export class BeneficiaryService {
   async findAll(
     limit?: number,
     page?: number,
-    search?: { email?: string; walletAddress?: string },
+    search?: { email?: string; walletAddress?: string }
   ): Promise<getReturn> {
     const pageNum = page;
     const size = limit;
@@ -135,6 +135,8 @@ export class BeneficiaryService {
     if (search?.walletAddress) {
       whereCondition.walletAddress = search.walletAddress;
     }
+
+    console.log(status)
 
     // Get total count
     const total = await this.prisma.beneficiary.count({
