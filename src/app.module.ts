@@ -10,6 +10,8 @@ import { ProjectService } from './project/project.service';
 import { ProjectModule } from './project/project.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AdminsModule } from './admins/admins.module';
+import { MultisigModule } from './multisig/multisig.module';
+import { VendorModule } from './vendor/vendor.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { AdminsModule } from './admins/admins.module';
     ProjectModule,
     DashboardModule,
     AdminsModule,
+    MultisigModule,
+    VendorModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProjectService, BeneficiaryModule],

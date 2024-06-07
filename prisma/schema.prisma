@@ -7,13 +7,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum GENDER {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum BENEFICIARY_STATUS {
+  NOT_ASSIGNED
+  FREEZED
+  UNFREEZED
+}
+
 model Beneficiary {
   uuid          String    @id @unique @default(uuid())
   email         String    @unique
   name          String
   age           Int
-  gender        String
-  walletAddress String?
+  gender        GENDER
+  status        BENEFICIARY_STATUS @default(NOT_ASSIGNED)
+  walletAddress String? @unique
   isArchived    Boolean   @default(false)
   projects      Project[] @relation("BeneficiaryProjects")
 }
@@ -24,11 +37,27 @@ model Project {
   voucher       Voucher?      @relation(fields: [voucherId], references: [assetId])
   voucherId     Int?          @unique
   adminAddress  String[]
+  superAdmin    String
   isArchived    Boolean       @default(false)
   createdAt     DateTime      @default(now())
   imageUrl      String?
+  vendor      Vendor?      
+  vendorId      String?       @unique
   beneficiaries Beneficiary[] @relation("BeneficiaryProjects")
 }
+
+model Vendor {
+  uuid          String  @id @unique @default(uuid())
+  email         String  @unique
+  name          String
+  location      String
+  walletAddress String
+  collectedAsa  Int?    @default(0)
+  isArchived    Boolean @default(false)
+   project       Project @relation(fields: [projectId], references: [uuid])
+  projectId     String  @unique
+}
+
 
 model Voucher {
   uuid          String   @id @unique @default(uuid())
@@ -36,4 +65,11 @@ model Voucher {
   voucherSymbol String   @unique
   assetId       Int      @unique @default(0)
   project       Project?
+}
+
+model Msig {
+  uuid          String   @id @unique @default(uuid())
+  signature     String
+  walletAddress String
+  projectId     String 
 }

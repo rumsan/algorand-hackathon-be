@@ -1,6 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
+enum GENDER {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+  OTHER = 'OTHER',
+}
 export class CreateBeneficiaryDto {
   @ApiProperty({
     description: 'Email of the beneficiary',
@@ -39,8 +50,8 @@ export class CreateBeneficiaryDto {
     example: 'male',
   })
   @IsNotEmpty()
-  @IsString()
-  gender: string;
+  @IsEnum(GENDER)
+  gender: GENDER;
 
   @ApiProperty({
     description: 'Wallete Address of the beneficiary',
@@ -63,7 +74,7 @@ export class GetBeneficiaryDto {
   @IsOptional()
   @IsString()
   @ApiProperty({
-    description: 'title of the blog',
+    description: 'Email of benefiicary',
     example: 'rumsan@gmail.com',
   })
   email: string;
@@ -90,4 +101,15 @@ export class GetBeneficiaryDto {
     example: '3',
   })
   limit?: string;
+}
+
+
+export class UpdateBeneficiaryDto {
+
+  @IsString()
+  @ApiProperty({
+    description: 'Status (NOT_ASSIGNED, FREEZED, UNFREEZED)',
+    example: 'FREEZED',
+  })
+  status: 'NOT_ASSIGNED' | 'FREEZED' | 'UNFREEZED';
 }

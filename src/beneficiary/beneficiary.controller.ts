@@ -8,6 +8,7 @@ import {
   DefaultValuePipe,
   ParseIntPipe,
   Param,
+  Patch,
 } from '@nestjs/common';
 import { BeneficiaryService } from './beneficiary.service';
 import { CreateBeneficiaryDto, GetBeneficiaryDto } from './dto/send-mail.dto';
@@ -18,7 +19,32 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class BeneficiaryController {
   constructor(private readonly beneficiaryService: BeneficiaryService) {}
 
-  @Get(':id')
+
+  @Get('/beneficiaries-age-data')
+  async getBeneficiariesAgeData() {
+    return this.beneficiaryService.TotalProjectBeneficiaryAge();
+  }
+
+  @Get('/get-count')
+  async getCount() {
+    try {
+      return await this.beneficiaryService.countProjectsBeneficiary();
+    } catch (e) {
+      console.log('error', e);
+      return e;
+    }
+  }
+  @Get('/count-gender')
+  getGenderCount() {
+    return this.beneficiaryService.countGender();
+  }
+
+  @Get('find-by-wallet/:id')
+  async findByWallet(@Param('id') id: string) {
+    return this.beneficiaryService.findByWalletAddress(id);
+  }
+
+  @Get('/:id')
   async getBeneficiary(@Param('id') id: string) {
     console.log('id', id);
     return this.beneficiaryService.findOne(id);
@@ -36,8 +62,8 @@ export class BeneficiaryController {
     description: 'The found record',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  getBlogs(
-    @Query('limit', new DefaultValuePipe(4), ParseIntPipe) limit: number,
+  getAllBeneficiary(
+    @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query() getBeneficiaryDto: GetBeneficiaryDto,
   ) {
@@ -51,20 +77,13 @@ export class BeneficiaryController {
   }
   @Post('create-ben')
   sendMail(@Body() sendMailDTO: CreateBeneficiaryDto, @Res() response: any) {
-    console.log('pugyo yeha samma');
-    const mail = this.beneficiaryService.sendMail(sendMailDTO);
-
-    return response.status(200).json({
-      message: 'success',
-      mail,
-    });
+    return this.beneficiaryService.sendMail(sendMailDTO);
   }
 
-  // @Post('add-project')
-  // async addProject(
-  //   @Body('ids') ids: string[],
-  //   @Body('projectId') projectId: string,
-  // ): Promise<void> {
-  //   await this.beneficiaryService.addProject(ids, projectId);
-  // }
+
+  @Patch('/:id')
+  updateBeneficiary(@Param('id') id: string, @Body() sendMailDTO: CreateBeneficiaryDto) {
+
+  }
+  
 }

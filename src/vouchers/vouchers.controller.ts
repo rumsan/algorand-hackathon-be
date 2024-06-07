@@ -28,8 +28,14 @@ export class VouchersController {
     return this.vouchersService.findAll();
   }
 
+  @Get('/get-voucher-symbol/:id')
+  findVoucher(@Param('id') voucherSymbol: string) {
+    return this.vouchersService.findSymbol(voucherSymbol);
+  }
+
   @Get(':id')
-  findOne(@Param('id') voucherSymbol: string) {
-    return this.vouchersService.findOne(voucherSymbol);
+  findOne(@Param('id') assetId: number) {
+    console.log('id', assetId);
+    return this.vouchersService.findOne(assetId);
   }
 }
