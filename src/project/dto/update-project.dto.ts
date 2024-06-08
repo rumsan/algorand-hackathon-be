@@ -34,3 +34,12 @@ export class AddBeneficiaryDto {
 }
 
 
+export class AddAdminDto{
+  @IsNotEmpty()
+  @IsString()
+  adminIds: string;
+
+  @IsNotEmpty()
+  @IsString()
+  activeAddress: string;
+}

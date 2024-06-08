@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { PrismaAppService } from 'src/prisma/prisma.service';
@@ -6,19 +11,18 @@ import { BENEFICIARY_STATUS, Prisma } from '@prisma/client';
 import { getReturn } from 'src/beneficiary/beneficiary.service';
 import { Project } from '@prisma/client';
 
-
-  const ageRanges = [
-    { label: '0-10', min: 0, max: 10 },
-    { label: '11-20', min: 11, max: 20 },
-    { label: '21-30', min: 21, max: 30 },
-    { label: '31-40', min: 31, max: 40 },
-    { label: '41-50', min: 41, max: 50 },
-    { label: '51-60', min: 51, max: 60 },
-    { label: '61-70', min: 61, max: 70 },
-    { label: '71-80', min: 71, max: 80 },
-    { label: '81-90', min: 81, max: 90 },
-    { label: '91-100', min: 91, max: 100 },
-  ];
+const ageRanges = [
+  { label: '0-10', min: 0, max: 10 },
+  { label: '11-20', min: 11, max: 20 },
+  { label: '21-30', min: 21, max: 30 },
+  { label: '31-40', min: 31, max: 40 },
+  { label: '41-50', min: 41, max: 50 },
+  { label: '51-60', min: 51, max: 60 },
+  { label: '61-70', min: 61, max: 70 },
+  { label: '71-80', min: 71, max: 80 },
+  { label: '81-90', min: 81, max: 90 },
+  { label: '91-100', min: 91, max: 100 },
+];
 
 @Injectable()
 export class ProjectService {
@@ -75,7 +79,7 @@ export class ProjectService {
 
   // chart service for gender
 
-async countGender(uuid: string): Promise<any> {
+  async countGender(uuid: string): Promise<any> {
     const project = await this.prisma.project.findUnique({
       where: { uuid },
       select: {
@@ -94,18 +98,22 @@ async countGender(uuid: string): Promise<any> {
     return this.groupByGender(project.beneficiaries);
   }
 
-  private groupByGender(beneficiaries: { gender: string }[]): { [key: string]: number } {
-    const genderGroups = beneficiaries.reduce((acc, { gender }) => {
-      if (!acc[gender]) {
-        acc[gender] = 0;
-      }
-      acc[gender]++;
-      return acc;
-    }, {} as { [key: string]: number });
+  private groupByGender(beneficiaries: { gender: string }[]): {
+    [key: string]: number;
+  } {
+    const genderGroups = beneficiaries.reduce(
+      (acc, { gender }) => {
+        if (!acc[gender]) {
+          acc[gender] = 0;
+        }
+        acc[gender]++;
+        return acc;
+      },
+      {} as { [key: string]: number },
+    );
 
     return genderGroups;
   }
-
 
   // create project
   create(
@@ -122,7 +130,6 @@ async countGender(uuid: string): Promise<any> {
     page?: number,
     search?: { name?: string },
   ): Promise<getReturn> {
-    console.log('sercice');
     const pageNum = page;
     const size = limit;
 
@@ -138,8 +145,7 @@ async countGender(uuid: string): Promise<any> {
       where: whereCondition,
     });
 
-    console.log(whereCondition);
-    console.log(total);
+  
     // Fetch paginated data
     const data = await this.prisma.project.findMany({
       where: whereCondition,
@@ -155,13 +161,11 @@ async countGender(uuid: string): Promise<any> {
     id: string,
     limit?: number,
     page?: number,
-    status?: BENEFICIARY_STATUS
+    status?: BENEFICIARY_STATUS,
   ): Promise<any> {
-
     const pageNum = page;
     const size = limit;
 
-    console.log(status, "status")
 
     const projectWithBeneficiaries = await this.prisma.project.findUnique({
       where: { uuid: id },
@@ -170,8 +174,8 @@ async countGender(uuid: string): Promise<any> {
           skip: (pageNum - 1) * size,
           take: size,
           where: {
-            status
-          }
+            status,
+          },
         },
         _count: {
           select: { beneficiaries: true },
@@ -235,24 +239,35 @@ async countGender(uuid: string): Promise<any> {
   }
 
   // Add new admin to the project
-  async addAdmin(id: string, adminIds: string[]): Promise<void> {
+  async addAdmin(
+    id: string,
+    adminId: string,
+    activeAddress: string,
+  ): Promise<any> {
     const project = await this.prisma.project.findUnique({
       where: { uuid: id },
-      select: { adminAddress: true }, // Only select the adminAddress field
+      select: { adminAddress: true, superAdmin: true }, // Only select the adminAddress field
     });
 
     if (!project) {
       throw new HttpException('Project not found', HttpStatus.BAD_REQUEST);
     }
+    if (project.superAdmin !== activeAddress) {
+      throw new HttpException(
+        'You are not authorized to add admin',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-    await this.prisma.project.update({
+    return await this.prisma.project.update({
       where: { uuid: id },
       data: {
         adminAddress: {
-          set: [...project.adminAddress, ...adminIds],
+          push: [adminId],
         },
       },
     });
+    
   }
 
   // soft delete project by id
@@ -282,7 +297,6 @@ async countGender(uuid: string): Promise<any> {
         },
       },
     });
-    console.log(data);
     return data;
   }
 }
