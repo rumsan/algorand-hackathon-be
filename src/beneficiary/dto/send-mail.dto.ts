@@ -121,3 +121,12 @@ export class UpdateBeneficiaryDto {
   })
   status: 'NOT_ASSIGNED' | 'FREEZED' | 'UNFREEZED';
 }
+
+export class SendAsaDto {
+  @IsString()
+  @ApiProperty({
+    description: 'Wallet address of beneficiary',
+    example: 'BQ63F7VH6FYQNFUK6YN6FGHI55FPE74FJT7EQ4NMBKHPT3QFSWJGXPPISA',
+  })
+  walletAddress: string
+}
