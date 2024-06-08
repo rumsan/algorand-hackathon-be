@@ -11,7 +11,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { BeneficiaryService } from './beneficiary.service';
-import { CreateBeneficiaryDto, GetBeneficiaryDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
+import { CreateBeneficiaryDto, GetBeneficiaryDto, SendAsaDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BENEFICIARY_STATUS } from '@prisma/client';
 
@@ -81,6 +81,11 @@ export class BeneficiaryController {
   @Post('/update')
   updateBulkBeneficiary(@Body() beneficiaryData: UpdateBeneficiaryDto) {
     return this.beneficiaryService.updateBulkBeneficiary(beneficiaryData)
+  }
+
+  @Post('send-asa')
+  sendAsaToBen(@Body() beneficiaryData: SendAsaDto){
+    return this.beneficiaryService.sendAsaToBen(beneficiaryData.walletAddress)
   }
   
 }
