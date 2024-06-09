@@ -12,6 +12,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { AdminsModule } from './admins/admins.module';
 import { MultisigModule } from './multisig/multisig.module';
 import { VendorModule } from './vendor/vendor.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { VendorModule } from './vendor/vendor.module';
     AdminsModule,
     MultisigModule,
     VendorModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProjectService, BeneficiaryModule],
