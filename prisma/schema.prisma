@@ -43,7 +43,6 @@ model Project {
   imageUrl      String?
   vendor      Vendor?      
   vendorId      String?       @unique
-  createdBy     String
   beneficiaries Beneficiary[] @relation("BeneficiaryProjects")
 }
 

@@ -120,7 +120,7 @@ export class ProjectService {
     createProjectDto: CreateProjectDto,
   ): Promise<Prisma.ProjectCreateInput> {
     return this.prisma.project.create({
-      data: { ...createProjectDto, createdBy: createProjectDto.name },
+      data: { ...createProjectDto},
     });
   }
 
