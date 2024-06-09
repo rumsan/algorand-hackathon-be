@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { PrismaAppService } from 'src/prisma/prisma.service';
@@ -6,19 +11,18 @@ import { Prisma } from '@prisma/client';
 import { getReturn } from 'src/beneficiary/beneficiary.service';
 import { Project } from '@prisma/client';
 
-
-  const ageRanges = [
-    { label: '0-10', min: 0, max: 10 },
-    { label: '11-20', min: 11, max: 20 },
-    { label: '21-30', min: 21, max: 30 },
-    { label: '31-40', min: 31, max: 40 },
-    { label: '41-50', min: 41, max: 50 },
-    { label: '51-60', min: 51, max: 60 },
-    { label: '61-70', min: 61, max: 70 },
-    { label: '71-80', min: 71, max: 80 },
-    { label: '81-90', min: 81, max: 90 },
-    { label: '91-100', min: 91, max: 100 },
-  ];
+const ageRanges = [
+  { label: '0-10', min: 0, max: 10 },
+  { label: '11-20', min: 11, max: 20 },
+  { label: '21-30', min: 21, max: 30 },
+  { label: '31-40', min: 31, max: 40 },
+  { label: '41-50', min: 41, max: 50 },
+  { label: '51-60', min: 51, max: 60 },
+  { label: '61-70', min: 61, max: 70 },
+  { label: '71-80', min: 71, max: 80 },
+  { label: '81-90', min: 81, max: 90 },
+  { label: '91-100', min: 91, max: 100 },
+];
 
 @Injectable()
 export class ProjectService {
@@ -75,7 +79,7 @@ export class ProjectService {
 
   // chart service for gender
 
-async countGender(uuid: string): Promise<any> {
+  async countGender(uuid: string): Promise<any> {
     const project = await this.prisma.project.findUnique({
       where: { uuid },
       select: {
@@ -94,18 +98,22 @@ async countGender(uuid: string): Promise<any> {
     return this.groupByGender(project.beneficiaries);
   }
 
-  private groupByGender(beneficiaries: { gender: string }[]): { [key: string]: number } {
-    const genderGroups = beneficiaries.reduce((acc, { gender }) => {
-      if (!acc[gender]) {
-        acc[gender] = 0;
-      }
-      acc[gender]++;
-      return acc;
-    }, {} as { [key: string]: number });
+  private groupByGender(beneficiaries: { gender: string }[]): {
+    [key: string]: number;
+  } {
+    const genderGroups = beneficiaries.reduce(
+      (acc, { gender }) => {
+        if (!acc[gender]) {
+          acc[gender] = 0;
+        }
+        acc[gender]++;
+        return acc;
+      },
+      {} as { [key: string]: number },
+    );
 
     return genderGroups;
   }
-
 
   // create project
   create(

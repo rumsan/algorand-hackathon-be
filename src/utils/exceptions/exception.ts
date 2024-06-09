@@ -12,5 +12,10 @@ export class RsException extends Error {
 }
 
 export const ERRORS = {
-  NOT_JSON: new RsException('Invalid JSON string', 'NOT_JSON', 400, 'VALIDATION'),
+  NOT_JSON: new RsException(
+    'Invalid JSON string',
+    'NOT_JSON',
+    400,
+    'VALIDATION',
+  ),
 };

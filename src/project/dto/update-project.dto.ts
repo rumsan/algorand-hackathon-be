@@ -1,14 +1,17 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateProjectDto } from './create-project.dto';
-import { ArrayNotEmpty, ArrayUnique, IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  ArrayUnique,
+  IsArray,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {}
 
-
 export class GetProjectDto {
- 
-
   @IsOptional()
   @ApiProperty({
     description: 'Page',
@@ -24,7 +27,6 @@ export class GetProjectDto {
   limit?: string;
 }
 
-
 export class AddBeneficiaryDto {
   @IsArray()
   @ArrayNotEmpty()
@@ -32,5 +34,3 @@ export class AddBeneficiaryDto {
   @IsString({ each: true })
   beneficiaryIds: string[];
 }
-
-
