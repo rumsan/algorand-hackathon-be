@@ -101,6 +101,9 @@ CREATE UNIQUE INDEX "Vendor_uuid_key" ON "Vendor"("uuid");
 CREATE UNIQUE INDEX "Vendor_email_key" ON "Vendor"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Vendor_walletAddress_key" ON "Vendor"("walletAddress");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Vendor_projectId_key" ON "Vendor"("projectId");
 
 -- CreateIndex

@@ -51,7 +51,7 @@ model Vendor {
   email         String  @unique
   name          String
   location      String
-  walletAddress String
+  walletAddress String  @unique
   collectedAsa  Int?    @default(0)
   isArchived    Boolean @default(false)
    project       Project @relation(fields: [projectId], references: [uuid])
