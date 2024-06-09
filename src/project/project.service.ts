@@ -7,7 +7,7 @@ import {
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { PrismaAppService } from 'src/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { BENEFICIARY_STATUS, Prisma } from '@prisma/client';
 import { getReturn } from 'src/beneficiary/beneficiary.service';
 import { Project } from '@prisma/client';
 
@@ -163,10 +163,13 @@ export class ProjectService {
     id: string,
     limit?: number,
     page?: number,
+    status?: BENEFICIARY_STATUS
   ): Promise<any> {
-    console.log(limit, page);
+
     const pageNum = page;
     const size = limit;
+
+    console.log(status, "status")
 
     const projectWithBeneficiaries = await this.prisma.project.findUnique({
       where: { uuid: id },
@@ -174,6 +177,9 @@ export class ProjectService {
         beneficiaries: {
           skip: (pageNum - 1) * size,
           take: size,
+          where: {
+            status
+          }
         },
         _count: {
           select: { beneficiaries: true },

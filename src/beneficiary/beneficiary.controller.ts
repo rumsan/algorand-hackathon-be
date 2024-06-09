@@ -11,8 +11,9 @@ import {
   Patch,
 } from '@nestjs/common';
 import { BeneficiaryService } from './beneficiary.service';
-import { CreateBeneficiaryDto, GetBeneficiaryDto } from './dto/send-mail.dto';
+import { CreateBeneficiaryDto, GetBeneficiaryDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { BENEFICIARY_STATUS } from '@prisma/client';
 
 @Controller('beneficiary')
 @ApiTags('Beneficiary')
@@ -22,7 +23,7 @@ export class BeneficiaryController {
 
   @Get('/beneficiaries-age-data')
   async getBeneficiariesAgeData() {
-    return this.beneficiaryService.TotalProjectBeneficiaryAge();
+    return this.beneficiaryService.totalProjectBeneficiaryAge();
   }
 
   @Get('/get-count')
@@ -46,7 +47,6 @@ export class BeneficiaryController {
 
   @Get('/:id')
   async getBeneficiary(@Param('id') id: string) {
-    console.log('id', id);
     return this.beneficiaryService.findOne(id);
   }
 
@@ -67,13 +67,10 @@ export class BeneficiaryController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query() getBeneficiaryDto: GetBeneficiaryDto,
   ) {
-    // console.log('getBeneficiaryDto', getBeneficiaryDto);
     const { email, walletAddress } = getBeneficiaryDto;
     const search = { email, walletAddress };
 
-    const res = this.beneficiaryService.findAll(limit, page, search);
-    //  console.log('res', res);
-    return res;
+    return this.beneficiaryService.findAll(limit, page, search);
   }
   @Post('create-ben')
   sendMail(@Body() sendMailDTO: CreateBeneficiaryDto, @Res() response: any) {
@@ -81,9 +78,9 @@ export class BeneficiaryController {
   }
 
 
-  @Patch('/:id')
-  updateBeneficiary(@Param('id') id: string, @Body() sendMailDTO: CreateBeneficiaryDto) {
-
+  @Post('/update')
+  updateBulkBeneficiary(@Body() beneficiaryData: UpdateBeneficiaryDto) {
+    return this.beneficiaryService.updateBulkBeneficiary(beneficiaryData)
   }
   
 }

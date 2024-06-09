@@ -14,6 +14,7 @@ import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { AddBeneficiaryDto, UpdateProjectDto } from './dto/update-project.dto';
+import { BENEFICIARY_STATUS } from '@prisma/client';
 
 @Controller('projects')
 @ApiTags('Project')
@@ -63,8 +64,9 @@ export class ProjectController {
     @Param('id') id: string,
     @Query('limit', new DefaultValuePipe(4), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('status') status: BENEFICIARY_STATUS,
   ) {
-    return this.projectService.findAllBeneficiary(id, limit, page);
+    return this.projectService.findAllBeneficiary(id, limit, page, status);
   }
 
   // find one project
