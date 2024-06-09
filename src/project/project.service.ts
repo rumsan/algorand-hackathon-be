@@ -120,7 +120,7 @@ export class ProjectService {
     createProjectDto: CreateProjectDto,
   ): Promise<Prisma.ProjectCreateInput> {
     return this.prisma.project.create({
-      data: { ...createProjectDto },
+      data: { ...createProjectDto, createdBy: createProjectDto.name },
     });
   }
 
@@ -145,7 +145,6 @@ export class ProjectService {
       where: whereCondition,
     });
 
-  
     // Fetch paginated data
     const data = await this.prisma.project.findMany({
       where: whereCondition,
@@ -165,7 +164,6 @@ export class ProjectService {
   ): Promise<any> {
     const pageNum = page;
     const size = limit;
-
 
     const projectWithBeneficiaries = await this.prisma.project.findUnique({
       where: { uuid: id },
@@ -267,7 +265,6 @@ export class ProjectService {
         },
       },
     });
-    
   }
 
   // soft delete project by id
