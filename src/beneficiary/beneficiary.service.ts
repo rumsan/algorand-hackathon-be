@@ -5,13 +5,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateBeneficiaryDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
+import { CreateBeneficiaryDto, SendAsaDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { PrismaAppService } from 'src/prisma/prisma.service';
 import * as QRCode from 'qrcode';
 import { decryptMessage } from 'src/utils/decrypt';
 import { groupByAge } from 'src/utils/groupByAge';
-import { BENEFICIARY_STATUS } from '@prisma/client';
+import * as algosdk from 'algosdk'
 
 export type getReturn = {
   data: any[];
@@ -101,7 +101,7 @@ export class BeneficiaryService {
           from: 'Rahat <asimneupane11@gmail.com>',
           to: CreateBeneficiaryDto.email,
           subject: `Welcome to Rahat`,
-          html: `<h2>Welcome to rahat</h2><p>You have been added as a beneficiary in Rahat. </p><p>Download Pera wallet and scan the QR code below:</p><img width="300" height="300" src="cid:qrcode@nodemailer"/>`,
+          html: `<h1>Welcome to rahat</h1><p>You have been added as a beneficiary in Rahat. </p><p>Download Pera wallet and scan the QR code below:</p><img width="300" height="300" src="cid:qrcode@nodemailer"/> <br/> <span>After creating wallet you can redeem your by </span> <a href='${process.env.FRONTEND_URL}beneficiary/details/${CreateBeneficiaryDto.walletAddress}'>clicking here</a>.`,
           attachments: [
             {
               filename: 'qrcode.png',
@@ -201,4 +201,23 @@ export class BeneficiaryService {
     return user;
   }
 
+  async sendAsaToBen(walletAddress: string) {
+    const algodClient = new algosdk.Algodv2("", process.env.ALGOD_URL, "")
+
+    const funderMnemonics = process.env.FUNDER_MNEMONICS
+    const funderWallet = process.env.FUNDER_WALLET
+
+    const secretOfSenderWallet = algosdk.mnemonicToSecretKey(funderMnemonics);
+    const txnSender = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+      from: funderWallet,
+      to: walletAddress,
+      amount: 500000,
+      suggestedParams: await algodClient.getTransactionParams().do(),
+    });
+    const signedTxnSender = txnSender.signTxn(secretOfSenderWallet.sk);
+    await algodClient.sendRawTransaction(signedTxnSender).do();
+
+    return 'Sent successfully'
+  }
+ 
   }
