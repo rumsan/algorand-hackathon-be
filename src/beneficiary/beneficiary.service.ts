@@ -35,7 +35,6 @@ export class BeneficiaryService {
     beneficiaryAddresses: UpdateBeneficiaryDto,
   ): Promise<any> {
 
-    console.log(beneficiaryAddresses,'beneficiaryAddresses');
     return await this.prisma.beneficiary.updateMany({
       where: {
         walletAddress: {
@@ -103,7 +102,21 @@ export class BeneficiaryService {
             from: 'Rahat <asimneupane11@gmail.com>',
             to: CreateBeneficiaryDto.email,
             subject: `Welcome to Rahat`,
-            html: `<h1>Welcome to rahat</h1><p>You have been added as a beneficiary in Rahat. </p><p>Download Pera wallet and scan the QR code below:</p><img width="300" height="300" src="cid:qrcode@nodemailer"/> <br/> <span>After creating wallet you can redeem your by </span> <a href='${process.env.FRONTEND_URL}beneficiary/details/${CreateBeneficiaryDto.walletAddress}'>clicking here</a>.`,
+            // html: `<h1>Welcome to rahat</h1><p>You have been added as a beneficiary in Rahat. </p><p>Download Pera wallet and scan the QR code below:</p><img width="300" height="300" src="cid:qrcode@nodemailer"/> <br/> <span>After creating wallet you can redeem your by </span> <a href='${process.env.FRONTEND_URL}beneficiary/details/${CreateBeneficiaryDto.walletAddress}'>clicking here</a>.`,
+            html: `
+        <div style="font-family: Arial, sans-serif; color: #333;">
+            <h1 style="color: #4CAF50;">Welcome to Rahat</h1>
+            <p>Dear Vendor,</p>
+            <p>You have been added as a vendor in Rahat.</p>
+            <p>Please download the Pera wallet and scan the QR code below:</p>
+            <img width="300" height="300" src="cid:qrcode@nodemailer" alt="QR Code" style="margin: 20px 0;"/>
+            <p>You have been added as a beneficiary in Rahat.</p> <span>After creating wallet you can redeem your by </span> <a href='${process.env.FRONTEND_URL}beneficiary/details/${CreateBeneficiaryDto.walletAddress}'>clicking here</a>.
+            </p>
+            <br/>
+            <p>Best Regards,</p>
+            <p>Rahat Team</p>
+        </div>
+    `,
             attachments: [
               {
                 filename: 'qrcode.png',
@@ -112,7 +125,7 @@ export class BeneficiaryService {
               },
             ],
           });
-console.log('newBeneficiary', newBeneficiary);
+          console.log('newBeneficiary', newBeneficiary);
           return newBeneficiary;
         });
 
