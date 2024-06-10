@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateBeneficiaryDto, SendAsaDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
+import { CreateBeneficiaryDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { PrismaAppService } from 'src/prisma/prisma.service';
 import * as QRCode from 'qrcode';
