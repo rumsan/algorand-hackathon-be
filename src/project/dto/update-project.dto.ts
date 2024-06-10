@@ -4,6 +4,7 @@ import {
   ArrayNotEmpty,
   ArrayUnique,
   IsArray,
+  IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -33,4 +34,14 @@ export class AddBeneficiaryDto {
   @ArrayUnique()
   @IsString({ each: true })
   beneficiaryIds: string[];
+}
+
+export class AddAdminDto {
+  @IsNotEmpty()
+  @IsString()
+  adminIds: string;
+
+  @IsNotEmpty()
+  @IsString()
+  activeAddress: string;
 }

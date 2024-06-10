@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateVendorDto } from './dto/create-vendor.dto';
 import { UpdateVendorDto } from './dto/update-vendor.dto';
 import { PrismaAppService } from 'src/prisma/prisma.service';
@@ -37,8 +37,17 @@ export class VendorService {
     return await this.prisma.vendor.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} vendor`;
+  async findOne(walletAddress: string): Promise<any> {
+    console.log('servicx');
+    const resp = await this.prisma.vendor.findUnique({
+      where: { walletAddress },
+    });
+    if (!resp) {
+throw new NotFoundException('vendor not found');    }
+        console.log('servicx');
+
+    console.log(resp);
+    return resp;
   }
 
   update(id: number, updateVendorDto: UpdateVendorDto) {

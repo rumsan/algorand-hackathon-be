@@ -136,7 +136,6 @@ export class BeneficiaryService {
       whereCondition.walletAddress = search.walletAddress;
     }
 
-    console.log(status)
 
     // Get total count
     const total = await this.prisma.beneficiary.count({

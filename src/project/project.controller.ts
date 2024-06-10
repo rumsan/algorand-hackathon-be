@@ -13,7 +13,7 @@ import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
-import { AddBeneficiaryDto, UpdateProjectDto } from './dto/update-project.dto';
+import { AddAdminDto, AddBeneficiaryDto, UpdateProjectDto } from './dto/update-project.dto';
 import { BENEFICIARY_STATUS } from '@prisma/client';
 
 @Controller('projects')
@@ -49,7 +49,6 @@ export class ProjectController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('name') name?: string,
   ) {
-    console.log('controller');
     return this.projectService.findAll(limit, page, { name });
   }
 
@@ -100,10 +99,12 @@ export class ProjectController {
   }
 
   // Add new admin to the project
-  @Patch(':id/addAdmins')
+  @Post(':id/addAdmins')
   @ApiOperation({ summary: 'Add  array of admin to the project' })
-  async addAdmin(@Param('id') id: string, @Body() adminIds: string[]) {
-    return this.projectService.addAdmin(id, adminIds);
+  async addAdmin(@Param('id') id: string, @Body() addAdmindto: AddAdminDto) {
+    const { adminIds,activeAddress } = addAdmindto;
+    
+    return this.projectService.addAdmin(id, adminIds,activeAddress);
   }
 
   // soft delete project by id

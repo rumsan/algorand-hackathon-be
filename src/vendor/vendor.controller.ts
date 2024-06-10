@@ -19,7 +19,7 @@ export class VendorController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.vendorService.findOne(+id);
+    return this.vendorService.findOne(id);
   }
 
   @Patch(':id')

@@ -120,7 +120,7 @@ export class ProjectService {
     createProjectDto: CreateProjectDto,
   ): Promise<Prisma.ProjectCreateInput> {
     return this.prisma.project.create({
-      data: { ...createProjectDto },
+      data: { ...createProjectDto},
     });
   }
 
@@ -130,7 +130,6 @@ export class ProjectService {
     page?: number,
     search?: { name?: string },
   ): Promise<getReturn> {
-    console.log('sercice');
     const pageNum = page;
     const size = limit;
 
@@ -146,8 +145,6 @@ export class ProjectService {
       where: whereCondition,
     });
 
-    console.log(whereCondition);
-    console.log(total);
     // Fetch paginated data
     const data = await this.prisma.project.findMany({
       where: whereCondition,
@@ -163,13 +160,10 @@ export class ProjectService {
     id: string,
     limit?: number,
     page?: number,
-    status?: BENEFICIARY_STATUS
+    status?: BENEFICIARY_STATUS,
   ): Promise<any> {
-
     const pageNum = page;
     const size = limit;
-
-    console.log(status, "status")
 
     const projectWithBeneficiaries = await this.prisma.project.findUnique({
       where: { uuid: id },
@@ -178,8 +172,8 @@ export class ProjectService {
           skip: (pageNum - 1) * size,
           take: size,
           where: {
-            status
-          }
+            status,
+          },
         },
         _count: {
           select: { beneficiaries: true },
@@ -243,21 +237,31 @@ export class ProjectService {
   }
 
   // Add new admin to the project
-  async addAdmin(id: string, adminIds: string[]): Promise<void> {
+  async addAdmin(
+    id: string,
+    adminId: string,
+    activeAddress: string,
+  ): Promise<any> {
     const project = await this.prisma.project.findUnique({
       where: { uuid: id },
-      select: { adminAddress: true }, // Only select the adminAddress field
+      select: { adminAddress: true, superAdmin: true }, // Only select the adminAddress field
     });
 
     if (!project) {
       throw new HttpException('Project not found', HttpStatus.BAD_REQUEST);
     }
+    if (project.superAdmin !== activeAddress) {
+      throw new HttpException(
+        'You are not authorized to add admin',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-    await this.prisma.project.update({
+    return await this.prisma.project.update({
       where: { uuid: id },
       data: {
         adminAddress: {
-          set: [...project.adminAddress, ...adminIds],
+          push: [adminId],
         },
       },
     });
@@ -290,7 +294,6 @@ export class ProjectService {
         },
       },
     });
-    console.log(data);
     return data;
   }
 }
