@@ -11,7 +11,12 @@ import {
   Patch,
 } from '@nestjs/common';
 import { BeneficiaryService } from './beneficiary.service';
-import { CreateBeneficiaryDto, GetBeneficiaryDto, SendAsaDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
+import {
+  CreateBeneficiaryDto,
+  GetBeneficiaryDto,
+  SendAsaDto,
+  UpdateBeneficiaryDto,
+} from './dto/send-mail.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BENEFICIARY_STATUS } from '@prisma/client';
 
@@ -19,7 +24,6 @@ import { BENEFICIARY_STATUS } from '@prisma/client';
 @ApiTags('Beneficiary')
 export class BeneficiaryController {
   constructor(private readonly beneficiaryService: BeneficiaryService) {}
-
 
   @Get('/beneficiaries-age-data')
   async getBeneficiariesAgeData() {
@@ -77,15 +81,15 @@ export class BeneficiaryController {
     return this.beneficiaryService.sendMail(sendMailDTO);
   }
 
-
   @Post('/update')
   updateBulkBeneficiary(@Body() beneficiaryData: UpdateBeneficiaryDto) {
-    return this.beneficiaryService.updateBulkBeneficiary(beneficiaryData)
+    console.log('update', beneficiaryData);
+
+    return this.beneficiaryService.updateBulkBeneficiary(beneficiaryData);
   }
 
   @Post('send-asa')
-  sendAsaToBen(@Body() beneficiaryData: SendAsaDto){
-    return this.beneficiaryService.sendAsaToBen(beneficiaryData.walletAddress)
+  sendAsaToBen(@Body() beneficiaryData: SendAsaDto) {
+    return this.beneficiaryService.sendAsaToBen(beneficiaryData.walletAddress);
   }
-  
 }
