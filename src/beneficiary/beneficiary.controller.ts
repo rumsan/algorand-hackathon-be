@@ -2,24 +2,25 @@ import {
   Controller,
   Get,
   Body,
-  Res,
   Post,
   Query,
   DefaultValuePipe,
   ParseIntPipe,
   Param,
-  Patch,
 } from '@nestjs/common';
 import { BeneficiaryService } from './beneficiary.service';
-import { CreateBeneficiaryDto, GetBeneficiaryDto, SendAsaDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
+import {
+  CreateBeneficiaryDto,
+  GetBeneficiaryDto,
+  SendAsaDto,
+  UpdateBeneficiaryDto,
+} from './dto/send-mail.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { BENEFICIARY_STATUS } from '@prisma/client';
 
 @Controller('beneficiary')
 @ApiTags('Beneficiary')
 export class BeneficiaryController {
   constructor(private readonly beneficiaryService: BeneficiaryService) {}
-
 
   @Get('/beneficiaries-age-data')
   async getBeneficiariesAgeData() {
@@ -35,9 +36,15 @@ export class BeneficiaryController {
       return e;
     }
   }
+
   @Get('/count-gender')
   getGenderCount() {
     return this.beneficiaryService.countGender();
+  }
+
+  @Get('status-distribution')
+  async getStatusDistribution() {
+    return this.beneficiaryService.getBeneficiaryStatusDistribution();
   }
 
   @Get('find-by-wallet/:id')
@@ -73,19 +80,17 @@ export class BeneficiaryController {
     return this.beneficiaryService.findAll(limit, page, search);
   }
   @Post('create-ben')
-  sendMail(@Body() sendMailDTO: CreateBeneficiaryDto, @Res() response: any) {
+  sendMail(@Body() sendMailDTO: CreateBeneficiaryDto) {
     return this.beneficiaryService.sendMail(sendMailDTO);
   }
 
-
   @Post('/update')
   updateBulkBeneficiary(@Body() beneficiaryData: UpdateBeneficiaryDto) {
-    return this.beneficiaryService.updateBulkBeneficiary(beneficiaryData)
+    return this.beneficiaryService.updateBulkBeneficiary(beneficiaryData);
   }
 
   @Post('send-asa')
-  sendAsaToBen(@Body() beneficiaryData: SendAsaDto){
-    return this.beneficiaryService.sendAsaToBen(beneficiaryData.walletAddress)
+  sendAsaToBen(@Body() beneficiaryData: SendAsaDto) {
+    return this.beneficiaryService.sendAsaToBen(beneficiaryData.walletAddress);
   }
-  
 }

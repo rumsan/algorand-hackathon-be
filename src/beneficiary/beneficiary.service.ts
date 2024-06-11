@@ -5,13 +5,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateBeneficiaryDto, SendAsaDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
+import {
+  CreateBeneficiaryDto,
+  UpdateBeneficiaryDto,
+} from './dto/send-mail.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { PrismaAppService } from 'src/prisma/prisma.service';
 import * as QRCode from 'qrcode';
 import { decryptMessage } from 'src/utils/decrypt';
 import { groupByAge } from 'src/utils/groupByAge';
-import * as algosdk from 'algosdk'
+import * as algosdk from 'algosdk';
 
 export type getReturn = {
   data: any[];
@@ -27,18 +30,20 @@ export class BeneficiaryService {
     private prisma: PrismaAppService,
   ) {}
 
-  async updateBulkBeneficiary(beneficiaryAddresses: UpdateBeneficiaryDto): Promise<any> {
-    console.log(beneficiaryAddresses)
+  async updateBulkBeneficiary(
+    beneficiaryAddresses: UpdateBeneficiaryDto,
+  ): Promise<any> {
+    console.log(beneficiaryAddresses);
     return await this.prisma.beneficiary.updateMany({
       where: {
         walletAddress: {
-          in: beneficiaryAddresses.addresses
-        }
+          in: beneficiaryAddresses.addresses,
+        },
       },
       data: {
-        status: beneficiaryAddresses.status
-      }
-    })
+        status: beneficiaryAddresses.status,
+      },
+    });
   }
 
   async totalProjectBeneficiaryAge() {
@@ -70,32 +75,30 @@ export class BeneficiaryService {
       });
     } else {
       try {
-        await this.prisma.$transaction(
-          async (prisma) => {
-            const existingBeneficiary = await prisma.beneficiary.findUnique({
-              where: { email: CreateBeneficiaryDto?.email },
-            });
+        await this.prisma.$transaction(async (prisma) => {
+          const existingBeneficiary = await prisma.beneficiary.findUnique({
+            where: { email: CreateBeneficiaryDto?.email },
+          });
 
-            if (existingBeneficiary) {
-              throw new ConflictException('Beneficiary already exists');
-            }
+          if (existingBeneficiary) {
+            throw new ConflictException('Beneficiary already exists');
+          }
 
-            const newBeneficiary = await prisma.beneficiary.create({
-              data: {
-                email: CreateBeneficiaryDto.email,
-                name: CreateBeneficiaryDto.name,
-                age: CreateBeneficiaryDto.age,
-                gender: CreateBeneficiaryDto.gender,
-                walletAddress: CreateBeneficiaryDto.walletAddress,
-                projects: {
-                  connect: { uuid: CreateBeneficiaryDto.projectId },
-                },
+          const newBeneficiary = await prisma.beneficiary.create({
+            data: {
+              email: CreateBeneficiaryDto.email,
+              name: CreateBeneficiaryDto.name,
+              age: CreateBeneficiaryDto.age,
+              gender: CreateBeneficiaryDto.gender,
+              walletAddress: CreateBeneficiaryDto.walletAddress,
+              projects: {
+                connect: { uuid: CreateBeneficiaryDto.projectId },
               },
-            });
+            },
+          });
 
-            return newBeneficiary;
-          },
-        );
+          return newBeneficiary;
+        });
 
         const mailResult = await this.mailService.sendMail({
           from: 'Rahat <asimneupane11@gmail.com>',
@@ -119,10 +122,24 @@ export class BeneficiaryService {
     }
   }
 
+  async getBeneficiaryStatusDistribution() {
+    const beneficiaries = await this.prisma.beneficiary.groupBy({
+      by: ['status'],
+      _count: {
+        status: true,
+      },
+    });
+
+    return beneficiaries.map((b) => ({
+      status: b.status,
+      count: b._count.status,
+    }));
+  }
+
   async findAll(
     limit?: number,
     page?: number,
-    search?: { email?: string; walletAddress?: string }
+    search?: { email?: string; walletAddress?: string },
   ): Promise<getReturn> {
     const pageNum = page;
     const size = limit;
@@ -135,7 +152,6 @@ export class BeneficiaryService {
     if (search?.walletAddress) {
       whereCondition.walletAddress = search.walletAddress;
     }
-
 
     // Get total count
     const total = await this.prisma.beneficiary.count({
@@ -174,11 +190,20 @@ export class BeneficiaryService {
   async countProjectsBeneficiary(): Promise<{
     totalBeneficiary: number;
     totalProject: number;
+    voucherCount: number;
+    vendorCount: number;
   }> {
     console.log('get service count');
     const beneCount = await this.prisma.beneficiary.count();
     const projCount = await this.prisma.project.count();
-    return { totalBeneficiary: beneCount, totalProject: projCount };
+    const voucherCount = await this.prisma.voucher.count();
+    const vendorCount = await this.prisma.vendor.count();
+    return {
+      totalBeneficiary: beneCount,
+      totalProject: projCount,
+      voucherCount,
+      vendorCount,
+    };
   }
 
   async countGender(): Promise<any> {
@@ -201,10 +226,10 @@ export class BeneficiaryService {
   }
 
   async sendAsaToBen(walletAddress: string) {
-    const algodClient = new algosdk.Algodv2("", process.env.ALGOD_URL, "")
+    const algodClient = new algosdk.Algodv2('', process.env.ALGOD_URL, '');
 
-    const funderMnemonics = process.env.FUNDER_MNEMONICS
-    const funderWallet = process.env.FUNDER_WALLET
+    const funderMnemonics = process.env.FUNDER_MNEMONICS;
+    const funderWallet = process.env.FUNDER_WALLET;
 
     const secretOfSenderWallet = algosdk.mnemonicToSecretKey(funderMnemonics);
     const txnSender = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
@@ -216,7 +241,6 @@ export class BeneficiaryService {
     const signedTxnSender = txnSender.signTxn(secretOfSenderWallet.sk);
     await algodClient.sendRawTransaction(signedTxnSender).do();
 
-    return 'Sent successfully'
+    return 'Sent successfully';
   }
- 
-  }
+}
