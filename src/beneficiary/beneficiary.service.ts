@@ -5,7 +5,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateBeneficiaryDto, UpdateBeneficiaryDto } from './dto/send-mail.dto';
+import {
+  CreateBeneficiaryDto,
+  UpdateBeneficiaryDto,
+} from './dto/send-mail.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { PrismaAppService } from 'src/prisma/prisma.service';
 import * as QRCode from 'qrcode';
@@ -127,6 +130,20 @@ export class BeneficiaryService {
     }
   }
 
+  async getBeneficiaryStatusDistribution() {
+    const beneficiaries = await this.prisma.beneficiary.groupBy({
+      by: ['status'],
+      _count: {
+        status: true,
+      },
+    });
+
+    return beneficiaries.map((b) => ({
+      status: b.status,
+      count: b._count.status,
+    }));
+  }
+
   async findAll(
     limit?: number,
     page?: number,
@@ -181,11 +198,20 @@ export class BeneficiaryService {
   async countProjectsBeneficiary(): Promise<{
     totalBeneficiary: number;
     totalProject: number;
+    voucherCount: number;
+    vendorCount: number;
   }> {
     console.log('get service count');
     const beneCount = await this.prisma.beneficiary.count();
     const projCount = await this.prisma.project.count();
-    return { totalBeneficiary: beneCount, totalProject: projCount };
+    const voucherCount = await this.prisma.voucher.count();
+    const vendorCount = await this.prisma.vendor.count();
+    return {
+      totalBeneficiary: beneCount,
+      totalProject: projCount,
+      voucherCount,
+      vendorCount,
+    };
   }
 
   async countGender(): Promise<any> {

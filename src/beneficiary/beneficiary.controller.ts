@@ -2,13 +2,11 @@ import {
   Controller,
   Get,
   Body,
-  Res,
   Post,
   Query,
   DefaultValuePipe,
   ParseIntPipe,
   Param,
-  Patch,
 } from '@nestjs/common';
 import { BeneficiaryService } from './beneficiary.service';
 import {
@@ -18,7 +16,6 @@ import {
   UpdateBeneficiaryDto,
 } from './dto/send-mail.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { BENEFICIARY_STATUS } from '@prisma/client';
 
 @Controller('beneficiary')
 @ApiTags('Beneficiary')
@@ -39,9 +36,15 @@ export class BeneficiaryController {
       return e;
     }
   }
+
   @Get('/count-gender')
   getGenderCount() {
     return this.beneficiaryService.countGender();
+  }
+
+  @Get('status-distribution')
+  async getStatusDistribution() {
+    return this.beneficiaryService.getBeneficiaryStatusDistribution();
   }
 
   @Get('find-by-wallet/:id')

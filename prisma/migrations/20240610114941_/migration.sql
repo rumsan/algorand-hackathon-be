@@ -29,7 +29,6 @@ CREATE TABLE "Project" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "imageUrl" TEXT,
     "vendorId" TEXT,
-    "createdBy" TEXT NOT NULL,
 
     CONSTRAINT "Project_pkey" PRIMARY KEY ("uuid")
 );

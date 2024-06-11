@@ -8,8 +8,11 @@ import { PrismaModule } from './prisma/prisma.module';
 import { VouchersModule } from './vouchers/vouchers.module';
 import { ProjectService } from './project/project.service';
 import { ProjectModule } from './project/project.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { AdminsModule } from './admins/admins.module';
 import { MultisigModule } from './multisig/multisig.module';
 import { VendorModule } from './vendor/vendor.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -31,8 +34,11 @@ import { VendorModule } from './vendor/vendor.module';
     BeneficiaryModule,
     VouchersModule,
     ProjectModule,
+    DashboardModule,
+    AdminsModule,
     MultisigModule,
     VendorModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProjectService, BeneficiaryModule],
