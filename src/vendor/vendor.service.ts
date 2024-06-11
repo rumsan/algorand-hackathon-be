@@ -40,8 +40,6 @@ export class VendorService {
         <div style="font-family: Arial, sans-serif; color: #333;">
             <h1 style="color: #4CAF50;">Welcome to Rahat</h1>
             <p>Dear Vendor,</p>
-            <p>You have been added as a vendor in Rahat.</p>
-            <img width="300" height="300" src="cid:qrcode@nodemailer" alt="QR Code" style="margin: 20px 0;"/>
             <p>You have been added as a vendor in Rahat. You can view your details by
                 <a href="${process.env.FRONTEND_URL}vendor/details/${createVendorDto.walletAddress}" style="color: #4CAF50;">clicking here</a>.
             </p>

@@ -77,14 +77,12 @@ export class BeneficiaryController {
     return this.beneficiaryService.findAll(limit, page, search);
   }
   @Post('create-ben')
-  sendMail(@Body() sendMailDTO: CreateBeneficiaryDto, @Res() response: any) {
+  async sendMail(@Body() sendMailDTO: CreateBeneficiaryDto) {
     return this.beneficiaryService.sendMail(sendMailDTO);
   }
 
   @Post('/update')
   updateBulkBeneficiary(@Body() beneficiaryData: UpdateBeneficiaryDto) {
-    console.log('update', beneficiaryData);
-
     return this.beneficiaryService.updateBulkBeneficiary(beneficiaryData);
   }
 
