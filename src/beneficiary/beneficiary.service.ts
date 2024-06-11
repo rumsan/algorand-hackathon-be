@@ -33,7 +33,6 @@ export class BeneficiaryService {
   async updateBulkBeneficiary(
     beneficiaryAddresses: UpdateBeneficiaryDto,
   ): Promise<any> {
-    console.log(beneficiaryAddresses);
     return await this.prisma.beneficiary.updateMany({
       where: {
         walletAddress: {
@@ -58,67 +57,76 @@ export class BeneficiaryService {
       decryptMessage(CreateBeneficiaryDto.mnemonics),
     );
 
-    const ben = await this.prisma.beneficiary.findUnique({
-      where: { walletAddress: CreateBeneficiaryDto.walletAddress },
-    });
-
-    if (ben) {
-      return await this.prisma.beneficiary.update({
-        where: {
-          walletAddress: CreateBeneficiaryDto.walletAddress,
-        },
-        data: {
-          projects: {
-            connect: { uuid: CreateBeneficiaryDto.projectId },
-          },
-        },
+    try {
+      const ben = await this.prisma.beneficiary.findUnique({
+        where: { email: CreateBeneficiaryDto.email },
       });
-    } else {
-      try {
-        await this.prisma.$transaction(async (prisma) => {
-          const existingBeneficiary = await prisma.beneficiary.findUnique({
-            where: { email: CreateBeneficiaryDto?.email },
-          });
 
-          if (existingBeneficiary) {
-            throw new ConflictException('Beneficiary already exists');
-          }
+      if (ben) {
+        throw new HttpException(
+          'Beneficiary already exists',
+          HttpStatus.BAD_REQUEST,
+        );
+      } else {
+        const existingBeneficiary = await this.prisma.beneficiary.findUnique({
+          where: { email: CreateBeneficiaryDto?.email },
+        });
 
-          const newBeneficiary = await prisma.beneficiary.create({
-            data: {
-              email: CreateBeneficiaryDto.email,
-              name: CreateBeneficiaryDto.name,
-              age: CreateBeneficiaryDto.age,
-              gender: CreateBeneficiaryDto.gender,
-              walletAddress: CreateBeneficiaryDto.walletAddress,
-              projects: {
-                connect: { uuid: CreateBeneficiaryDto.projectId },
+        if (existingBeneficiary) {
+          throw new ConflictException('Beneficiary already exists');
+        }
+
+        const newBeneficiary = await this.prisma.beneficiary.create({
+          data: {
+            email: CreateBeneficiaryDto.email,
+            name: CreateBeneficiaryDto.name,
+            age: CreateBeneficiaryDto.age,
+            gender: CreateBeneficiaryDto.gender,
+            walletAddress: CreateBeneficiaryDto.walletAddress,
+            projects: {
+              connect: { uuid: CreateBeneficiaryDto.projectId },
+            },
+          },
+        });
+
+        try {
+          await this.mailService.sendMail({
+            from: 'Rahat <asimneupane11@gmail.com>',
+            to: CreateBeneficiaryDto.email,
+            subject: `Welcome to Rahat`,
+            html: `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h1 style="color: #4CAF50;">Welcome to Rahat</h1>
+                <p>Dear Vendor,</p>
+                <p>You have been added as a beneficiary in Rahat.</p>
+                <p>Please download the Pera wallet and scan the QR code below:</p>
+                <img width="300" height="300" src="cid:qrcode@nodemailer" alt="QR Code" style="margin: 20px 0;"/>
+                <p>You have been added as a beneficiary in Rahat.</p> <span>After creating wallet you can redeem your by </span> <a href='${process.env.FRONTEND_URL}beneficiary/details/${CreateBeneficiaryDto.walletAddress}'>clicking here</a>.
+                </p>
+                <br/>
+                <p>Best Regards,</p>
+                <p>Rahat Team</p>
+            </div>
+        `,
+            attachments: [
+              {
+                filename: 'qrcode.png',
+                content: qrCodeBuffer,
+                cid: 'qrcode@nodemailer',
               },
-            },
+            ],
           });
-
-          return newBeneficiary;
-        });
-
-        const mailResult = await this.mailService.sendMail({
-          from: 'Rahat <asimneupane11@gmail.com>',
-          to: CreateBeneficiaryDto.email,
-          subject: `Welcome to Rahat`,
-          html: `<h1>Welcome to rahat</h1><p>You have been added as a beneficiary in Rahat. </p><p>Download Pera wallet and scan the QR code below:</p><img width="300" height="300" src="cid:qrcode@nodemailer"/> <br/> <span>After creating wallet you can redeem your by </span> <a href='${process.env.FRONTEND_URL}beneficiary/details/${CreateBeneficiaryDto.walletAddress}'>clicking here</a>.`,
-          attachments: [
-            {
-              filename: 'qrcode.png',
-              content: qrCodeBuffer,
-              cid: 'qrcode@nodemailer',
-            },
-          ],
-        });
-
-        return mailResult;
-      } catch (error) {
-        console.error('Error occurred while creating beneficiary:', error);
-        throw error;
+        } catch (error) {
+          throw new HttpException(
+            'Error sending email',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }
+        console.log(newBeneficiary, 'newBeneficiary');
+        return newBeneficiary;
       }
+    } catch (error) {
+      throw new HttpException('Error while creating ben', 501);
     }
   }
 

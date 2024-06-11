@@ -35,6 +35,7 @@ export class ProjectController {
   @Post()
   @ApiOperation({ summary: 'Create a new Project' })
   async create(@Body() createProjectDto: CreateProjectDto) {
+    console.log(createProjectDto,'createProjectDtoController');
     return this.projectService.create(createProjectDto);
   }
 

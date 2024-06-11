@@ -80,7 +80,7 @@ export class BeneficiaryController {
     return this.beneficiaryService.findAll(limit, page, search);
   }
   @Post('create-ben')
-  sendMail(@Body() sendMailDTO: CreateBeneficiaryDto) {
+  async sendMail(@Body() sendMailDTO: CreateBeneficiaryDto) {
     return this.beneficiaryService.sendMail(sendMailDTO);
   }
 
