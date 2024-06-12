@@ -126,6 +126,7 @@ export class BeneficiaryService {
         return newBeneficiary;
       }
     } catch (error) {
+      console.log(error)
       throw new HttpException('Error while creating ben', 501);
     }
   }
