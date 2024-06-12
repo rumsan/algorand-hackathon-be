@@ -60,18 +60,20 @@ export class VendorService {
     return await this.prisma.vendor.findMany();
   }
 
-  async findOne(walletAddress: string): Promise<any> {
-    console.log('servicx');
+  async findOne(walletAddress: string, ): Promise<any> {
+
     const resp = await this.prisma.vendor.findUnique({
       where: { walletAddress },
     });
     if (!resp) {
       throw new NotFoundException('vendor not found');
     }
-    console.log('servicx');
+    const project = await this.prisma.project.findUnique({
+      where: { uuid: resp.projectId },
+    });
 
-    console.log(resp);
-    return resp;
+    const voucherId = project.voucherId;
+    return { resp, voucherId };
   }
 
   update(id: number, updateVendorDto: UpdateVendorDto) {
